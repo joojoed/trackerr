@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View All Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>All Data Viewer</h1>
+
+<table id="dataTable">
+    <thead id="tableHead">
+        <!-- Table Headings will be dynamically inserted here -->
+    </thead>
+    <tbody id="tableBody">
+        <!-- Table Data will be dynamically inserted here -->
+    </tbody>
+</table>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbx05czIGcHH86lBhI0wybjz08h7-cbUWFcvgxawKIMw9m6CZNAT_3n1lsLG5v_ykiSV/exec';
+
+    async function fetchData() {
+        try {
+            const response = await fetch(webAppUrl);
+            const data = await response.json();
+
+            if (data.length > 0) {
+                const headers = data[0]; // Assuming the first row contains headers
+                populateTableHeaders(headers);
+                populateTableBody(data.slice(1)); // Skip the first row for body data
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    function populateTableHeaders(headers) {
+        const thead = document.getElementById('tableHead');
+        let tr = document.createElement('tr');
+        headers.forEach(header => {
+            let th = document.createElement('th');
+            th.innerText = header;
+            tr.appendChild(th);
+        });
+        thead.appendChild(tr);
+    }
+
+    function populateTableBody(rows) {
+        const tbody = document.getElementById('tableBody');
+        rows.forEach(row => {
+            let tr = document.createElement('tr');
+            row.forEach(cell => {
+                let td = document.createElement('td');
+                td.innerText = cell;
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+    }
+
+    fetchData();
+</script>
+
+</body>
+</html>
