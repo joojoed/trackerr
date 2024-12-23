@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Row Viewer and Editor</title>
+    <style>
+        .data-container {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .data-cell {
+            width: 150px;
+            margin: 5px;
+            display: block;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Row Viewer and Editor</h1>
+
+<div class="data-container">
+    <div id="rowNumber">Row #: </div>
+    <div id="dataDisplay">
+        <!-- Row data will be dynamically inserted here -->
+    </div>
+
+    <button id="prevButton" disabled>Previous</button>
+    <button id="nextButton" disabled>Next</button>
+    <button id="editButton">Edit</button>
+</div>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec';
+    let data = [];
+    let headers = [];
+    let currentIndex = 1; // Start after the header row
+
+    async function fetchData() {
+        try {
+            const response = await fetch(webAppUrl);
+            data = await response.json();
+            if (data.length > 1) { // Ensure more than the headers row exists
+                headers = data[0]; // Capture the headers from the first row
+                document.getElementById('nextButton').disabled = false;
+                showRow(currentIndex);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    function showRow(index) {
+        if (index >= 1 && index < data.length) {
+            document.getElementById('rowNumber').innerText = `Row #: ${index}`;
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.innerHTML = ''; // Clear existing UI elements
+
+            data[index].forEach((value, colIndex) => {
+                let labelElement = document.createElement('label');
+                labelElement.htmlFor = `cell-${colIndex}`;
+                labelElement.textContent = headers[colIndex] + ':';
+                dataDisplay.appendChild(labelElement);
+
+                let inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.value = value;
+                inputElement.className = 'data-cell';
+                inputElement.id = `cell-${colIndex}`;
+                dataDisplay.appendChild(inputElement);
+            });
+            checkNavigationButtons();
+        }
+    }
+
+    function checkNavigationButtons() {
+        document.getElementById('prevButton').disabled = currentIndex <= 1;
+        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
+    }
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentIndex > 1) {
+            currentIndex--;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (currentIndex < data.length - 1) {
+            currentIndex++;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('editButton').addEventListener('click', async () => {
+        let newValues = [];
+        data[currentIndex].forEach((_, colIndex) => {
+            const value = document.getElementById(`cell-${colIndex}`).value;
+            newValues.push(value);
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
+            });
+            data[currentIndex] = newValues; // Update local data
+            alert('Row updated successfully.');
+        } catch (error) {
+            console.error('Error updating data:', error);
+            alert('Failed to update row. Please try again.');
+        }
+    });
+
+    fetchData();
+</script>
+
+</body>
+</html>
