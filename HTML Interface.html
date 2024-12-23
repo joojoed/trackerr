@@ -1,87 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Google Sheets Management</title>
+    <title>Google Sheets Editor</title>
     <style>
-        table {
-            width: 50%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
+        #dataDisplay {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-<h1>Manage Google Sheets</h1>
+<h1>Single Row Viewer and Editor</h1>
 
-<h2>Add New Entry</h2>
-<form id="dataForm">
-    <label for="input">Enter Data:</label>
-    <input type="text" id="input" name="input" required>
-    <button type="submit">Add Data</button>
-</form>
+<div id="dataDisplay">
+    <label for="dataInput">Current Data:</label>
+    <input type="text" id="dataInput" disabled>
+    <button id="editButton">Edit</button>
+</div>
 
-<h2>Current Sheet Data</h2>
-<table id="dataTable">
-    <thead>
-        <tr>
-            <!-- Assume one column sheet for simplicity -->
-            <th>Data</th>
-        </tr>
-    </thead>
-    <tbody id="dataBody">
-        <!-- Dynamic rows will be inserted here -->
-    </tbody>
-</table>
+<div id="navigation">
+    <button id="prevButton" disabled>Previous</button>
+    <button id="nextButton" disabled>Next</button>
+</div>
 
 <script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbwapZqA3lY6p06Teh1SLGN3M9q5vUlSAFhHH7eB4TQsU-CGj25rsOOqcbx1B81OiFxz/exec';
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyLscXy8XCBfWDQ_VqLrK0eaobup5KdrysZPFovyqaD6XNNFaygC2PkwMuvOddidxdr/exec';
+    let data = [];
+    let currentIndex = 0;
 
-    document.getElementById('dataForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const dataInput = document.getElementById('input').value;
-
-        await fetch(webAppUrl, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ action: 'add', input: dataInput })
-        });
-
-        alert('Data added successfully. Refresh the page to see the updates.');
-        document.getElementById('input').value = '';  // Clear input field
-    });
-
-    async function loadTable() {
+    async function fetchData() {
         try {
             const response = await fetch(webAppUrl);
-            const data = await response.json();
-            
-            const tbody = document.getElementById('dataBody');
-            tbody.innerHTML = '';  // Clear existing data
-
-            data.forEach((row, index) => {
-                let tr = document.createElement('tr');
-                row.forEach(cell => {
-                    let td = document.createElement('td');
-                    td.textContent = cell;
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
-            });
-
+            data = await response.json();
+            if (data.length > 0) {
+                document.getElementById('nextButton').disabled = false;
+                showRow(currentIndex);
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
 
-    loadTable();
+    function showRow(index) {
+        if (index >= 0 && index < data.length) {
+            document.getElementById('dataInput').value = data[index][0];
+            checkNavigationButtons();
+        }
+    }
+
+    function checkNavigationButtons() {
+        document.getElementById('prevButton').disabled = currentIndex <= 0;
+        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
+    }
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (currentIndex < data.length - 1) {
+            currentIndex++;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('editButton').addEventListener('click', async () => {
+        const currentValue = document.getElementById('dataInput').value;
+        const newValue = prompt('Edit data:', currentValue);
+        if (newValue !== null && newValue !== currentValue) {
+            try {
+                await fetch(webAppUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'no-cors',
+                    body: JSON.stringify({ action: 'edit', row: currentIndex + 1, newValue: newValue })
+                });
+                data[currentIndex][0] = newValue; // Update local array
+                showRow(currentIndex);
+                alert('Data updated successfully.');
+            } catch (error) {
+                console.error('Error updating data:', error);
+            }
+        }
+    });
+
+    fetchData();
 </script>
 
 </body>
