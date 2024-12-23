@@ -1,30 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Google Sheets Editor</title>
+    <title>Google Sheets Row Viewer and Editor</title>
     <style>
         #dataDisplay {
             margin-bottom: 20px;
+        }
+        .data-cell {
+            width: 150px;
+            margin: 5px;
         }
     </style>
 </head>
 <body>
 
-<h1>Single Row Viewer and Editor</h1>
+<h1>Row Viewer and Editor</h1>
 
 <div id="dataDisplay">
-    <label for="dataInput">Current Data:</label>
-    <input type="text" id="dataInput" disabled>
-    <button id="editButton">Edit</button>
+    <!-- Row data will be dynamically inserted here -->
 </div>
 
 <div id="navigation">
     <button id="prevButton" disabled>Previous</button>
     <button id="nextButton" disabled>Next</button>
+    <button id="editButton">Edit</button>
 </div>
 
 <script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyLscXy8XCBfWDQ_VqLrK0eaobup5KdrysZPFovyqaD6XNNFaygC2PkwMuvOddidxdr/exec';
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycby5HpOOjEm_eANAGdrumOhBPnPqCvG0BAFoavNhGg1wZdJQxFtLcg-TQGvOnmsnE5i_/exec';
     let data = [];
     let currentIndex = 0;
 
@@ -43,7 +46,17 @@
 
     function showRow(index) {
         if (index >= 0 && index < data.length) {
-            document.getElementById('dataInput').value = data[index][0];
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.innerHTML = ''; // Clear existing UI elements
+
+            data[index].forEach((value, colIndex) => {
+                let inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.value = value;
+                inputElement.className = 'data-cell';
+                inputElement.id = `cell-${colIndex}`;
+                dataDisplay.appendChild(inputElement);
+            });
             checkNavigationButtons();
         }
     }
@@ -68,22 +81,23 @@
     });
 
     document.getElementById('editButton').addEventListener('click', async () => {
-        const currentValue = document.getElementById('dataInput').value;
-        const newValue = prompt('Edit data:', currentValue);
-        if (newValue !== null && newValue !== currentValue) {
-            try {
-                await fetch(webAppUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: 'edit', row: currentIndex + 1, newValue: newValue })
-                });
-                data[currentIndex][0] = newValue; // Update local array
-                showRow(currentIndex);
-                alert('Data updated successfully.');
-            } catch (error) {
-                console.error('Error updating data:', error);
-            }
+        let newValues = [];
+        data[currentIndex].forEach((_, colIndex) => {
+            const value = document.getElementById(`cell-${colIndex}`).value;
+            newValues.push(value);
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
+            });
+            data[currentIndex] = newValues; // Update local data
+            alert('Data updated successfully.');
+        } catch (error) {
+            console.error('Error updating data:', error);
         }
     });
 
