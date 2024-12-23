@@ -16,6 +16,7 @@
 
 <h1>Row Viewer and Editor</h1>
 
+<div id="rowNumber">Row #: </div>
 <div id="dataDisplay">
     <!-- Row data will be dynamically inserted here -->
 </div>
@@ -29,13 +30,13 @@
 <script>
     const webAppUrl = 'https://script.google.com/macros/s/AKfycbx05czIGcHH86lBhI0wybjz08h7-cbUWFcvgxawKIMw9m6CZNAT_3n1lsLG5v_ykiSV/exec';
     let data = [];
-    let currentIndex = 0;
+    let currentIndex = 1; // Start with the second row (index 1 since index 0 is the header row)
 
     async function fetchData() {
         try {
             const response = await fetch(webAppUrl);
             data = await response.json();
-            if (data.length > 0) {
+            if (data.length > 1) { // Ensure more than just headers
                 document.getElementById('nextButton').disabled = false;
                 showRow(currentIndex);
             }
@@ -45,7 +46,8 @@
     }
 
     function showRow(index) {
-        if (index >= 0 && index < data.length) {
+        if (index >= 1 && index < data.length) {
+            document.getElementById('rowNumber').innerText = `Row #: ${index}`;
             const dataDisplay = document.getElementById('dataDisplay');
             dataDisplay.innerHTML = ''; // Clear existing UI elements
 
@@ -62,12 +64,12 @@
     }
 
     function checkNavigationButtons() {
-        document.getElementById('prevButton').disabled = currentIndex <= 0;
+        document.getElementById('prevButton').disabled = currentIndex <= 1;
         document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
     }
 
     document.getElementById('prevButton').addEventListener('click', () => {
-        if (currentIndex > 0) {
+        if (currentIndex > 1) {
             currentIndex--;
             showRow(currentIndex);
         }
