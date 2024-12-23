@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Row</title>
+    <style>
+        .add-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .add-field {
+            width: 150px;
+            margin: 10px 0;
+            display: block;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Add New Row</h1>
+
+<div class="add-container">
+    <div id="addFormContainer">
+        <!-- Form fields for adding new data will be inserted here -->
+    </div>
+    <button id="addButton">Add New Row</button>
+</div>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec';
+
+    // Assuming your Google Sheet headers are known or fetched dynamically
+    const headers = ['Column1', 'Column2', 'Column3']; // Replace with actual headers
+
+    function createAddFormFields(headers) {
+        const addFormContainer = document.getElementById('addFormContainer');
+        headers.forEach(header => {
+            const label = document.createElement('label');
+            label.innerText = header;
+            label.htmlFor = `add-${header}`;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Input for ${header}`;
+            input.className = 'add-field';
+            input.id = `add-${header}`;
+
+            addFormContainer.appendChild(label);
+            addFormContainer.appendChild(input);
+        });
+    }
+
+    document.getElementById('addButton').addEventListener('click', async () => {
+        const newValues = headers.map(header => {
+            return document.getElementById(`add-${header}`).value.trim(); // Collect and trim values
+        });
+
+        if (newValues.some(value => value === "")) {
+            alert('Please fill in all fields to add a new row.');
+            return;
+        }
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'add', values: newValues })
+            });
+            alert('New row added successfully.');
+            document.querySelectorAll('.add-field').forEach(field => field.value = ''); // Clear inputs
+        } catch (error) {
+            console.error('Error adding new row:', error);
+            alert('Failed to add new row. Please try again.');
+        }
+    });
+
+    createAddFormFields(headers);
+</script>
+
+</body>
+</html>
