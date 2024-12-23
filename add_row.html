@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Add New Row</title>
+    <title>Add New Data</title>
     <style>
         #formContainer {
             margin-top: 20px;
@@ -9,49 +9,57 @@
         .form-field {
             display: block;
             margin-bottom: 10px;
-            padding: 8px;
-            width: 50%;
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
         }
         button {
             padding: 10px 20px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-<h1>Add New Row</h1>
+<h1>Add New Data</h1>
 
 <div id="formContainer">
     <!-- Form fields will be dynamically inserted here -->
 </div>
 
-<button id="addButton">Add Row</button>
+<button id="submitButton">Submit New Data</button>
 
 <script>
     const webAppUrl = 'https://script.google.com/macros/s/AKfycbx05czIGcHH86lBhI0wybjz08h7-cbUWFcvgxawKIMw9m6CZNAT_3n1lsLG5v_ykiSV/exec';
 
-    // Assuming you have the column headers or fetch them dynamically if possible
+    // Assuming your Google Sheet headers are known in advance or fetched dynamically
     const headers = ['Column1', 'Column2', 'Column3']; // Replace with your actual headers
 
     function createFormFields(headers) {
         const formContainer = document.getElementById('formContainer');
 
         headers.forEach(header => {
+            const label = document.createElement('label');
+            label.innerText = header;
+            label.htmlFor = header;
+
             const input = document.createElement('input');
             input.type = 'text';
-            input.placeholder = `Enter ${header}`;
+            input.placeholder = `Input for ${header}`;
             input.className = 'form-field';
             input.id = header;
+
+            formContainer.appendChild(label);
             formContainer.appendChild(input);
         });
     }
 
-    async function addNewRow() {
+    async function submitData() {
         const values = headers.map(header => {
-            return document.getElementById(header).value.trim(); // Collect values, trimming whitespace
+            return document.getElementById(header).value.trim(); // Collect values
         });
 
-        // Ensure no empty row is added if inputs are blank
+        // Validate that no fields are left empty
         if (values.some(value => value === "")) {
             alert('Please fill in all fields.');
             return;
@@ -65,15 +73,15 @@
                 mode: 'no-cors',
                 body: JSON.stringify({ action: 'add', values: values })
             });
-            alert('Row added successfully.');
+            alert('New data added successfully.');
             document.querySelectorAll('.form-field').forEach(field => field.value = ''); // Clear inputs
         } catch (error) {
-            console.error('Error adding row:', error);
-            alert('Failed to add row. Please try again.');
+            console.error('Error adding new data:', error);
+            alert('Failed to add data. Please try again later.');
         }
     }
 
-    document.getElementById('addButton').addEventListener('click', addNewRow);
+    document.getElementById('submitButton').addEventListener('click', submitData);
 
     createFormFields(headers);
 </script>
