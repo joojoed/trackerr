@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>View All Data</title>
+    <title>View All Data with Filter</title>
     <style>
         table {
             width: 100%;
@@ -15,11 +15,19 @@
         th {
             background-color: #f2f2f2;
         }
+        #filterInput {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 8px;
+            width: 20%;
+        }
     </style>
 </head>
 <body>
 
 <h1>All Data Viewer</h1>
+
+<input type="text" id="filterInput" placeholder="Type to filter">
 
 <table id="dataTable">
     <thead id="tableHead">
@@ -61,6 +69,7 @@
 
     function populateTableBody(rows) {
         const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = ''; // Clear existing rows
         rows.forEach(row => {
             let tr = document.createElement('tr');
             row.forEach(cell => {
@@ -71,6 +80,28 @@
             tbody.appendChild(tr);
         });
     }
+
+    function applyFilter() {
+        const filterText = document.getElementById('filterInput').value.toLowerCase();
+        const tbody = document.getElementById('tableBody');
+        const rows = tbody.getElementsByTagName('tr');
+        
+        Array.from(rows).forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            let rowText = '';
+            Array.from(cells).forEach(cell => {
+                rowText += cell.innerText.toLowerCase();
+            });
+
+            if (rowText.includes(filterText)) {
+                row.style.display = ''; // Show row
+            } else {
+                row.style.display = 'none'; // Hide row
+            }
+        });
+    }
+
+    document.getElementById('filterInput').addEventListener('keyup', applyFilter);
 
     fetchData();
 </script>
