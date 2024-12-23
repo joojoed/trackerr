@@ -1,38 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sheets CRUD</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        .form-view { max-width: 400px; margin: auto; text-align: center; }
-        .form-view div { margin: 10px 0; }
-        input, textarea, button { width: 100%; padding: 10px; margin: 5px 0; }
-        .hidden { display: none; }
-    </style>
+    <title>Google Sheets Form</title>
 </head>
 <body>
-    <h2>Google Sheets Data</h2>
-    <div class="form-view">
-        <div id="displayArea">
-            <div id="name"></div>
-            <div id="email"></div>
-            <div id="message"></div>
-            <button id="editButton">Edit</button>
-        </div>
 
-        <div id="editArea" class="hidden">
-            <input type="text" id="editName" placeholder="Name">
-            <input type="text" id="editEmail" placeholder="Email">
-            <textarea id="editMessage" placeholder="Message"></textarea>
-            <button id="saveButton">Save</button>
-            <button id="cancelButton">Cancel</button>
-        </div>
-        
-        <button id="backButton">Back</button>
-        <button id="nextButton">Next</button>
-    </div>
-    <script src="data-view.js"></script>
+<form id="dataForm">
+    <label for="input">Enter Data:</label>
+    <input type="text" id="input" name="input" required>
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    document.getElementById('dataForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const dataInput = document.getElementById('input').value;
+
+        await fetch('https://script.google.com/macros/s/AKfycbzMq-1tTz5j4FPrwIz3jUXDP4DbNzkt5ZAb_x0jWoICGz5GGOzVk51mffNqAFy1vXWw/exec', {
+            method: 'POST',
+            mode: 'no-cors', // using no-cors mode
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ input: dataInput })
+        });
+
+        alert('Data submitted successfully, but no response can be confirmed due to no-cors mode.');
+    });
+</script>
+
 </body>
 </html>
