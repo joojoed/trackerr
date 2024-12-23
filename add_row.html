@@ -3,10 +3,10 @@
 <head>
     <title>Add New Row</title>
     <style>
-        form {
+        #formContainer {
             margin-top: 20px;
         }
-        input[type="text"] {
+        .form-field {
             display: block;
             margin-bottom: 10px;
             padding: 8px;
@@ -21,37 +21,41 @@
 
 <h1>Add New Row</h1>
 
-<form id="addRowForm">
-    <div id="formFields">
-        <!-- Dynamic form fields will be inserted here -->
-    </div>
-    <button type="submit">Add Row</button>
-</form>
+<div id="formContainer">
+    <!-- Form fields will be dynamically inserted here -->
+</div>
+
+<button id="addButton">Add Row</button>
 
 <script>
     const webAppUrl = 'https://script.google.com/macros/s/AKfycbx05czIGcHH86lBhI0wybjz08h7-cbUWFcvgxawKIMw9m6CZNAT_3n1lsLG5v_ykiSV/exec';
 
-    // Define headers assuming you know them or fetch them dynamically if needed
-    const headers = ['Column1', 'Column2', 'Column3']; // Replace with actual headers
+    // Assuming you have the column headers or fetch them dynamically if possible
+    const headers = ['Column1', 'Column2', 'Column3']; // Replace with your actual headers
 
     function createFormFields(headers) {
-        const formFieldsContainer = document.getElementById('formFields');
+        const formContainer = document.getElementById('formContainer');
 
         headers.forEach(header => {
             const input = document.createElement('input');
             input.type = 'text';
             input.placeholder = `Enter ${header}`;
+            input.className = 'form-field';
             input.id = header;
-            formFieldsContainer.appendChild(input);
+            formContainer.appendChild(input);
         });
     }
 
-    async function addRow(event) {
-        event.preventDefault();
-        
+    async function addNewRow() {
         const values = headers.map(header => {
-            return document.getElementById(header).value;
+            return document.getElementById(header).value.trim(); // Collect values, trimming whitespace
         });
+
+        // Ensure no empty row is added if inputs are blank
+        if (values.some(value => value === "")) {
+            alert('Please fill in all fields.');
+            return;
+        }
 
         // Send data to Google Apps Script
         try {
@@ -62,13 +66,14 @@
                 body: JSON.stringify({ action: 'add', values: values })
             });
             alert('Row added successfully.');
-            document.getElementById('addRowForm').reset(); // Clear the form
+            document.querySelectorAll('.form-field').forEach(field => field.value = ''); // Clear inputs
         } catch (error) {
             console.error('Error adding row:', error);
+            alert('Failed to add row. Please try again.');
         }
     }
 
-    document.getElementById('addRowForm').addEventListener('submit', addRow);
+    document.getElementById('addButton').addEventListener('click', addNewRow);
 
     createFormFields(headers);
 </script>
