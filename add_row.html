@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Row</title>
+    <style>
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            display: block;
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 50%;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Add New Row</h1>
+
+<form id="addRowForm">
+    <div id="formFields">
+        <!-- Dynamic form fields will be inserted here -->
+    </div>
+    <button type="submit">Add Row</button>
+</form>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbx05czIGcHH86lBhI0wybjz08h7-cbUWFcvgxawKIMw9m6CZNAT_3n1lsLG5v_ykiSV/exec';
+
+    // Define headers assuming you know them or fetch them dynamically if needed
+    const headers = ['Column1', 'Column2', 'Column3']; // Replace with actual headers
+
+    function createFormFields(headers) {
+        const formFieldsContainer = document.getElementById('formFields');
+
+        headers.forEach(header => {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = `Enter ${header}`;
+            input.id = header;
+            formFieldsContainer.appendChild(input);
+        });
+    }
+
+    async function addRow(event) {
+        event.preventDefault();
+        
+        const values = headers.map(header => {
+            return document.getElementById(header).value;
+        });
+
+        // Send data to Google Apps Script
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'add', values: values })
+            });
+            alert('Row added successfully.');
+            document.getElementById('addRowForm').reset(); // Clear the form
+        } catch (error) {
+            console.error('Error adding row:', error);
+        }
+    }
+
+    document.getElementById('addRowForm').addEventListener('submit', addRow);
+
+    createFormFields(headers);
+</script>
+
+</body>
+</html>
