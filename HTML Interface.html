@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets CRUD</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .form-view { max-width: 400px; margin: auto; text-align: center; }
+        .form-view div { margin: 10px 0; }
+        input, textarea, button { width: 100%; padding: 10px; margin: 5px 0; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h2>Google Sheets Data</h2>
+    <div class="form-view">
+        <div id="displayArea">
+            <div id="name"></div>
+            <div id="email"></div>
+            <div id="message"></div>
+            <button id="editButton">Edit</button>
+        </div>
+
+        <div id="editArea" class="hidden">
+            <input type="text" id="editName" placeholder="Name">
+            <input type="text" id="editEmail" placeholder="Email">
+            <textarea id="editMessage" placeholder="Message"></textarea>
+            <button id="saveButton">Save</button>
+            <button id="cancelButton">Cancel</button>
+        </div>
+        
+        <button id="backButton">Back</button>
+        <button id="nextButton">Next</button>
+    </div>
+    <script src="data-view.js"></script>
+</body>
+</html>
