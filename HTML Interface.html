@@ -1,32 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Google Sheets Form</title>
+    <title>Google Sheets Management</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
+<h1>Manage Google Sheets</h1>
+
+<h2>Add New Entry</h2>
 <form id="dataForm">
     <label for="input">Enter Data:</label>
     <input type="text" id="input" name="input" required>
-    <button type="submit">Submit</button>
+    <button type="submit">Add Data</button>
 </form>
 
+<h2>Current Sheet Data</h2>
+<table id="dataTable">
+    <thead>
+        <tr>
+            <!-- Assume one column sheet for simplicity -->
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody id="dataBody">
+        <!-- Dynamic rows will be inserted here -->
+    </tbody>
+</table>
+
 <script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbwapZqA3lY6p06Teh1SLGN3M9q5vUlSAFhHH7eB4TQsU-CGj25rsOOqcbx1B81OiFxz/exec';
+
     document.getElementById('dataForm').addEventListener('submit', async function(event) {
         event.preventDefault();
         const dataInput = document.getElementById('input').value;
 
-        await fetch('https://script.google.com/macros/s/AKfycbzMq-1tTz5j4FPrwIz3jUXDP4DbNzkt5ZAb_x0jWoICGz5GGOzVk51mffNqAFy1vXWw/exec', {
+        await fetch(webAppUrl, {
             method: 'POST',
-            mode: 'no-cors', // using no-cors mode
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ input: dataInput })
+            body: JSON.stringify({ action: 'add', input: dataInput })
         });
 
-        alert('Data submitted successfully, but no response can be confirmed due to no-cors mode.');
+        alert('Data added successfully. Refresh the page to see the updates.');
+        document.getElementById('input').value = '';  // Clear input field
     });
+
+    async function loadTable() {
+        try {
+            const response = await fetch(webAppUrl);
+            const data = await response.json();
+            
+            const tbody = document.getElementById('dataBody');
+            tbody.innerHTML = '';  // Clear existing data
+
+            data.forEach((row, index) => {
+                let tr = document.createElement('tr');
+                row.forEach(cell => {
+                    let td = document.createElement('td');
+                    td.textContent = cell;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    loadTable();
 </script>
 
 </body>
