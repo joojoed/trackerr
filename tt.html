@@ -12,55 +12,50 @@
             background-color: #f4f4f9;
             color: #333;
         }
+
         h1 {
             text-align: center;
             color: #28527a;
             margin-bottom: 50px;
         }
+
         .container {
             max-width: 800px;
-            margin: 20px auto;
+            margin: 0 auto 30px;
             padding: 20px;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         h2 {
             color: #333;
             margin-bottom: 20px;
             border-bottom: 2px solid #28527a;
             padding-bottom: 10px;
         }
-        .row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .field-container {
-            flex: 1;
-        }
+
         label {
             font-weight: bold;
             margin-bottom: 5px;
             display: block;
         }
-        input {
-            width: 100%;
+
+        .data-cell, .add-field {
+            width: calc(100% - 20px);
+            margin-bottom: 15px;
             padding: 10px;
             font-size: 16px;
             border-radius: 4px;
             border: 1px solid #ccc;
             transition: border-color 0.3s ease;
         }
-        input:focus {
+
+        .data-cell:focus, .add-field:focus {
             border-color: #28527a;
         }
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
+
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -71,12 +66,20 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+
         button:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
+
         button:hover {
             background-color: #3c6589;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -87,24 +90,24 @@
 <!-- HR Section -->
 <div class="container">
     <h2>HR Department</h2>
-    <div id="hrDataDisplay" class="row">
-        <!-- HR data will be dynamically inserted here (3 fields per row) -->
+    <div id="hrDataDisplay">
+        <!-- Fields for HR will be dynamically inserted here -->
     </div>
     <div class="button-group">
-        <button id="hrBackButton" disabled>Back</button>
-        <button id="hrNextButton">Next</button>
+        <button id="hrEditButton">Edit HR Data</button>
+        <button id="hrAddButton">Add New HR Row</button>
     </div>
 </div>
 
 <!-- PRO Section -->
 <div class="container">
     <h2>PRO Department</h2>
-    <div id="proDataDisplay" class="row">
-        <!-- PRO data will be dynamically inserted here (3 fields per row) -->
+    <div id="proDataDisplay">
+        <!-- Fields for PRO will be dynamically inserted here -->
     </div>
     <div class="button-group">
-        <button id="proBackButton" disabled>Back</button>
-        <button id="proNextButton">Next</button>
+        <button id="proEditButton">Edit PRO Data</button>
+        <button id="proAddButton">Add New PRO Row</button>
     </div>
 </div>
 
@@ -112,17 +115,12 @@
     const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec'; // Replace with your Apps Script URL
     let data = [];
     let headers = [];
-    let hrIndex = 0; // HR pagination index
-    let proIndex = 0; // PRO pagination index
-    const HR_FIELDS = 13; // Total number of HR fields (columns 1–13)
-    const FIELDS_PER_ROW = 3; // Number of fields to display per row
-    const ROWS_PER_PAGE = 1; // Number of rows per page (each row has 3 fields)
 
     async function fetchData() {
         try {
             const response = await fetch(webAppUrl);
             data = await response.json();
-            headers = data[0]; // Get the headers
+            headers = data[0]; // Get the column headers
             renderHRFields();
             renderPROFields();
         } catch (error) {
@@ -131,94 +129,89 @@
     }
 
     /**
-     * Render the HR fields (paginate by 3 fields per "row").
+     * Render fields for the HR department (columns 1–13).
      */
     function renderHRFields() {
         const hrDataDisplay = document.getElementById('hrDataDisplay');
-        hrDataDisplay.innerHTML = ''; // Clear previous fields
+        hrDataDisplay.innerHTML = ''; // Clear previous content
 
-        const startIndex = hrIndex * FIELDS_PER_ROW; // Start of this page
-        const endIndex = Math.min(startIndex + FIELDS_PER_ROW, HR_FIELDS); // End of this page
-
-        for (let i = startIndex; i < endIndex; i++) {
-            const fieldContainer = document.createElement('div');
-            fieldContainer.className = 'field-container';
-
+        for (let i = 0; i < 13; i++) { // HR handles columns 1–13 (index 0–12)
             const label = document.createElement('label');
             label.htmlFor = `hrField-${i}`;
             label.textContent = headers[i];
 
             const input = document.createElement('input');
             input.id = `hrField-${i}`;
-            input.value = data[1]?.[i] || ''; // Use the first row of data for example
+            input.className = 'data-cell';
             input.type = 'text';
+            input.value = data[1]?.[i] || ''; // Use row 1 data (example)
 
-            fieldContainer.appendChild(label);
-            fieldContainer.appendChild(input);
-            hrDataDisplay.appendChild(fieldContainer);
+            hrDataDisplay.appendChild(label);
+            hrDataDisplay.appendChild(input);
         }
-
-        // Update button states
-        document.getElementById('hrBackButton').disabled = hrIndex === 0;
-        document.getElementById('hrNextButton').disabled = endIndex === HR_FIELDS;
     }
 
     /**
-     * Render the PRO fields (paginate by 3 fields per "row").
+     * Render fields for the PRO department (columns 14 onward).
      */
     function renderPROFields() {
         const proDataDisplay = document.getElementById('proDataDisplay');
-        proDataDisplay.innerHTML = ''; // Clear previous fields
+        proDataDisplay.innerHTML = ''; // Clear previous content
 
-        const proStartIndex = HR_FIELDS + proIndex * FIELDS_PER_ROW; // Start after HR fields
-        const proEndIndex = Math.min(proStartIndex + FIELDS_PER_ROW, headers.length); // End index
-
-        for (let i = proStartIndex; i < proEndIndex; i++) {
-            const fieldContainer = document.createElement('div');
-            fieldContainer.className = 'field-container';
-
+        for (let i = 13; i < headers.length; i++) { // PRO handles columns 14 onward
             const label = document.createElement('label');
             label.htmlFor = `proField-${i}`;
             label.textContent = headers[i];
 
             const input = document.createElement('input');
             input.id = `proField-${i}`;
-            input.value = data[1]?.[i] || ''; // Use the first row of data for example
+            input.className = 'data-cell';
             input.type = 'text';
+            input.value = data[1]?.[i] || ''; // Use row 1 data (example)
 
-            fieldContainer.appendChild(label);
-            fieldContainer.appendChild(input);
-            proDataDisplay.appendChild(fieldContainer);
+            proDataDisplay.appendChild(label);
+            proDataDisplay.appendChild(input);
         }
-
-        // Update button states
-        document.getElementById('proBackButton').disabled = proIndex === 0;
-        document.getElementById('proNextButton').disabled = proEndIndex === headers.length;
     }
 
-    // HR Pagination Controls
-    document.getElementById('hrNextButton').addEventListener('click', () => {
-        hrIndex++;
-        renderHRFields();
+    document.getElementById('hrEditButton').addEventListener('click', async () => {
+        const updatedData = [];
+        for (let i = 0; i < 13; i++) {
+            updatedData.push(document.getElementById(`hrField-${i}`).value.trim());
+        }
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: 2, values: updatedData }) // Example row 2
+            });
+            alert('HR data updated successfully!');
+        } catch (error) {
+            console.error('Error updating HR data:', error);
+        }
     });
 
-    document.getElementById('hrBackButton').addEventListener('click', () => {
-        hrIndex--;
-        renderHRFields();
+    document.getElementById('proEditButton').addEventListener('click', async () => {
+        const updatedData = [];
+        for (let i = 13; i < headers.length; i++) {
+            updatedData.push(document.getElementById(`proField-${i}`).value.trim());
+        }
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: 2, values: updatedData }) // Example row 2
+            });
+            alert('PRO data updated successfully!');
+        } catch (error) {
+            console.error('Error updating PRO data:', error);
+        }
     });
 
-    // PRO Pagination Controls
-    document.getElementById('proNextButton').addEventListener('click', () => {
-        proIndex++;
-        renderPROFields();
-    });
-
-    document.getElementById('proBackButton').addEventListener('click', () => {
-        proIndex--;
-        renderPROFields();
-    });
-
-    // Fetch data and initialize fields
     fetchData();
 </script>
 
