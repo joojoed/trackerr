@@ -19,7 +19,7 @@
         }
         .container {
             max-width: 800px;
-            margin: 0 auto 30px;
+            margin: 20px auto;
             padding: 20px;
             background-color: #fff;
             border: 1px solid #ddd;
@@ -34,22 +34,18 @@
         }
         .row {
             display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            gap: 20px;
             margin-bottom: 20px;
         }
         .field-container {
             flex: 1;
-            min-width: 30%;
-            max-width: 30%;
-            margin: 5px;
         }
         label {
             font-weight: bold;
             margin-bottom: 5px;
             display: block;
         }
-        .data-cell, .add-field {
+        input {
             width: 100%;
             padding: 10px;
             font-size: 16px;
@@ -57,8 +53,13 @@
             border: 1px solid #ccc;
             transition: border-color 0.3s ease;
         }
-        .data-cell:focus, .add-field:focus {
+        input:focus {
             border-color: #28527a;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
         button {
             padding: 10px 20px;
@@ -70,13 +71,12 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
         button:hover {
             background-color: #3c6589;
-        }
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
         }
     </style>
 </head>
@@ -87,8 +87,8 @@
 <!-- HR Section -->
 <div class="container">
     <h2>HR Department</h2>
-    <div id="hrDataDisplay">
-        <!-- HR row data grouped into rows of three fields -->
+    <div id="hrDataDisplay" class="row">
+        <!-- HR data will be dynamically inserted here (3 fields per row) -->
     </div>
     <div class="button-group">
         <button id="hrBackButton" disabled>Back</button>
@@ -99,8 +99,8 @@
 <!-- PRO Section -->
 <div class="container">
     <h2>PRO Department</h2>
-    <div id="proDataDisplay">
-        <!-- PRO row data grouped into rows of three fields -->
+    <div id="proDataDisplay" class="row">
+        <!-- PRO data will be dynamically inserted here (3 fields per row) -->
     </div>
     <div class="button-group">
         <button id="proBackButton" disabled>Back</button>
@@ -109,95 +109,116 @@
 </div>
 
 <script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec';
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec'; // Replace with your Apps Script URL
     let data = [];
     let headers = [];
-    let hrPage = 0; // Pagination index for HR department
-    let proPage = 0; // Pagination index for PRO department
-    const fieldsPerPage = 3; // Number of fields per row/page
+    let hrIndex = 0; // HR pagination index
+    let proIndex = 0; // PRO pagination index
+    const HR_FIELDS = 13; // Total number of HR fields (columns 1–13)
+    const FIELDS_PER_ROW = 3; // Number of fields to display per row
+    const ROWS_PER_PAGE = 1; // Number of rows per page (each row has 3 fields)
 
     async function fetchData() {
         try {
             const response = await fetch(webAppUrl);
             data = await response.json();
-            if (data.length > 1) {
-                headers = data[0];
-                showHRFields(hrPage);
-                showPROFields(proPage);
-            }
+            headers = data[0]; // Get the headers
+            renderHRFields();
+            renderPROFields();
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
 
-    function paginateFields(dataSet, startIndex, section) {
-        const endIndex = Math.min(startIndex + fieldsPerPage, dataSet.length);
-        const formContainer = document.getElementById(section);
+    /**
+     * Render the HR fields (paginate by 3 fields per "row").
+     */
+    function renderHRFields() {
+        const hrDataDisplay = document.getElementById('hrDataDisplay');
+        hrDataDisplay.innerHTML = ''; // Clear previous fields
 
-        formContainer.innerHTML = ''; // Clear existing fields
+        const startIndex = hrIndex * FIELDS_PER_ROW; // Start of this page
+        const endIndex = Math.min(startIndex + FIELDS_PER_ROW, HR_FIELDS); // End of this page
 
         for (let i = startIndex; i < endIndex; i++) {
             const fieldContainer = document.createElement('div');
             fieldContainer.className = 'field-container';
 
             const label = document.createElement('label');
-            label.htmlFor = `${section}-field-${i}`;
+            label.htmlFor = `hrField-${i}`;
             label.textContent = headers[i];
 
             const input = document.createElement('input');
+            input.id = `hrField-${i}`;
+            input.value = data[1]?.[i] || ''; // Use the first row of data for example
             input.type = 'text';
-            input.id = `${section}-field-${i}`;
-            input.className = 'data-cell';
-            input.value = dataSet[i] || ''; // Set value or empty if undefined
 
             fieldContainer.appendChild(label);
             fieldContainer.appendChild(input);
-            formContainer.appendChild(fieldContainer);
+            hrDataDisplay.appendChild(fieldContainer);
         }
-    }
-
-    // HR Department: Display relevant fields
-    function showHRFields(page) {
-        const startIndex = page * fieldsPerPage;
-        const endIndex = Math.min(startIndex + fieldsPerPage, 13); // Display fields 1-13 for HR
-        paginateFields(headers.slice(startIndex, endIndex), startIndex, 'hrDataDisplay');
 
         // Update button states
-        document.getElementById('hrBackButton').disabled = startIndex === 0;
-        document.getElementById('hrNextButton').disabled = endIndex >= 13;
+        document.getElementById('hrBackButton').disabled = hrIndex === 0;
+        document.getElementById('hrNextButton').disabled = endIndex === HR_FIELDS;
     }
 
+    /**
+     * Render the PRO fields (paginate by 3 fields per "row").
+     */
+    function renderPROFields() {
+        const proDataDisplay = document.getElementById('proDataDisplay');
+        proDataDisplay.innerHTML = ''; // Clear previous fields
+
+        const proStartIndex = HR_FIELDS + proIndex * FIELDS_PER_ROW; // Start after HR fields
+        const proEndIndex = Math.min(proStartIndex + FIELDS_PER_ROW, headers.length); // End index
+
+        for (let i = proStartIndex; i < proEndIndex; i++) {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.className = 'field-container';
+
+            const label = document.createElement('label');
+            label.htmlFor = `proField-${i}`;
+            label.textContent = headers[i];
+
+            const input = document.createElement('input');
+            input.id = `proField-${i}`;
+            input.value = data[1]?.[i] || ''; // Use the first row of data for example
+            input.type = 'text';
+
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
+            proDataDisplay.appendChild(fieldContainer);
+        }
+
+        // Update button states
+        document.getElementById('proBackButton').disabled = proIndex === 0;
+        document.getElementById('proNextButton').disabled = proEndIndex === headers.length;
+    }
+
+    // HR Pagination Controls
     document.getElementById('hrNextButton').addEventListener('click', () => {
-        hrPage++;
-        showHRFields(hrPage);
+        hrIndex++;
+        renderHRFields();
     });
 
     document.getElementById('hrBackButton').addEventListener('click', () => {
-        hrPage--;
-        showHRFields(hrPage);
+        hrIndex--;
+        renderHRFields();
     });
 
-    // PRO Department: Display relevant fields
-    function showPROFields(page) {
-        const startIndex = 13 + page * fieldsPerPage; // Fields start from index 13 for PRO
-        const endIndex = Math.min(startIndex + fieldsPerPage, headers.length);
-        paginateFields(headers.slice(startIndex, endIndex), startIndex, 'proDataDisplay');
-
-        // Update button states
-        document.getElementById('proBackButton').disabled = startIndex <= 13;
-        document.getElementById('proNextButton').disabled = endIndex >= headers.length;
-    }
-
+    // PRO Pagination Controls
     document.getElementById('proNextButton').addEventListener('click', () => {
-        proPage++;
-        showPROFields(proPage);
+        proIndex++;
+        renderPROFields();
     });
 
     document.getElementById('proBackButton').addEventListener('click', () => {
-        proPage--;
-        showPROFields(proPage);
+        proIndex--;
+        renderPROFields();
     });
 
+    // Fetch data and initialize fields
     fetchData();
 </script>
 
