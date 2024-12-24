@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR and PRO Row Management</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #28527a;
+            margin-bottom: 50px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #28527a;
+            padding-bottom: 10px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+        .data-cell, .add-field {
+            width: calc(100% - 20px);
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            transition: border-color 0.3s ease;
+        }
+        .data-cell:focus, .add-field:focus {
+            border-color: #28527a;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28527a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #3c6589;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Row Management for HR and PRO Departments</h1>
+
+<!-- HR Section -->
+<div class="container">
+    <h2>HR Department</h2>
+    <div id="hrDataDisplay">
+        <!-- HR row data and input fields for new entries will be dynamically inserted here -->
+    </div>
+    <div class="button-group">
+        <button id="hrEditButton">Edit HR Data</button>
+        <button id="hrAddButton">Add New HR Row</button>
+    </div>
+</div>
+
+<!-- PRO Section -->
+<div class="container">
+    <h2>PRO Department</h2>
+    <div id="proDataDisplay">
+        <!-- PRO row data and input fields for new entries will be dynamically inserted here -->
+    </div>
+    <div class="button-group">
+        <button id="proEditButton">Edit PRO Data</button>
+        <button id="proAddButton">Add New PRO Row</button>
+    </div>
+</div>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec';
+    let data = [];
+    let headers = [];
+    let currentIndex = 1; // Start after the header row
+
+    async function fetchData() {
+        try {
+            const response = await fetch(webAppUrl);
+            data = await response.json();
+            if (data.length > 1) {
+                headers = data[0];
+                showHRRow(currentIndex);
+                showPRORow(currentIndex);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    function showHRRow(index) {
+        const hrDataDisplay = document.getElementById('hrDataDisplay');
+        hrDataDisplay.innerHTML = '';
+
+        if (index >= 1 && index < data.length) {
+            data[index].forEach((value, colIndex) => {
+                if (colIndex < 13) { // HR Fields
+                    let labelElement = document.createElement('label');
+                    labelElement.htmlFor = `hrCell-${colIndex}`;
+                    labelElement.textContent = headers[colIndex];
+                    hrDataDisplay.appendChild(labelElement);
+
+                    let inputElement = document.createElement('input');
+                    inputElement.type = 'text';
+                    inputElement.value = value;
+                    inputElement.className = 'data-cell';
+                    inputElement.id = `hrCell-${colIndex}`;
+                    hrDataDisplay.appendChild(inputElement);
+                }
+            });
+        }
+    }
+
+    function showPRORow(index) {
+        const proDataDisplay = document.getElementById('proDataDisplay');
+        proDataDisplay.innerHTML = '';
+
+        if (index >= 1 && index < data.length) {
+            data[index].forEach((value, colIndex) => {
+                if (colIndex >= 13) { // PRO Fields
+                    let labelElement = document.createElement('label');
+                    labelElement.htmlFor = `proCell-${colIndex}`;
+                    labelElement.textContent = headers[colIndex];
+                    proDataDisplay.appendChild(labelElement);
+
+                    let inputElement = document.createElement('input');
+                    inputElement.type = 'text';
+                    inputElement.value = value;
+                    inputElement.className = 'data-cell';
+                    inputElement.id = `proCell-${colIndex}`;
+                    proDataDisplay.appendChild(inputElement);
+                }
+            });
+        }
+    }
+
+    function collectValues(formType) {
+        let newValues = data[currentIndex].slice();
+
+        if (formType === 'HR') {
+            document.querySelectorAll('#hrDataDisplay .data-cell').forEach((inputElement) => {
+                let colIndex = parseInt(inputElement.id.split('-')[1]);
+                newValues[colIndex] = inputElement.value;
+            });
+        } else if (formType === 'PRO') {
+            document.querySelectorAll('#proDataDisplay .data-cell').forEach((inputElement) => {
+                let colIndex = parseInt(inputElement.id.split('-')[1]);
+                newValues[colIndex] = inputElement.value;
+            });
+        }
+        return newValues;
+    }
+
+    document.getElementById('hrEditButton').addEventListener('click', async () => {
+        let newValues = collectValues('HR');
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
+            });
+            data[currentIndex] = newValues;
+            alert('HR data updated successfully.');
+        } catch (error) {
+            console.error('Error updating HR data:', error);
+            alert('Failed to update HR data. Please try again.');
+        }
+    });
+
+    document.getElementById('proEditButton').addEventListener('click', async () => {
+        let newValues = collectValues('PRO');
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
+            });
+            data[currentIndex] = newValues;
+            alert('PRO data updated successfully.');
+        } catch (error) {
+            console.error('Error updating PRO data:', error);
+            alert('Failed to update PRO data. Please try again.');
+        }
+    });
+
+    document.getElementById('hrAddButton').addEventListener('click', async () => {
+        let newValues = headers.map((header, colIndex) => {
+            return colIndex < 13 ? document.getElementById(`hrCell-${colIndex}`).value.trim() : "";
+        });
+
+        if (newValues.slice(0, 13).some(value => value === "")) {
+            alert('Please fill in all HR fields before adding a new row.');
+            return;
+        }
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'add', values: newValues })
+            });
+            alert('New HR row added successfully.');
+            fetchData();
+        } catch (error) {
+            console.error('Error adding new HR row:', error);
+            alert('Failed to add new HR row. Please try again.');
+        }
+    });
+
+    document.getElementById('proAddButton').addEventListener('click', async () => {
+        let newValues = headers.map((header, colIndex) => {
+            return colIndex >= 13 ? document.getElementById(`proCell-${colIndex}`).value.trim() : "";
+        });
+
+        if (newValues.some((value, colIndex) => colIndex >= 13 && value === "")) {
+            alert('Please fill in all PRO fields before adding a new row.');
+            return;
+        }
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'add', values: newValues })
+            });
+            alert('New PRO row added successfully.');
+            fetchData();
+        } catch (error) {
+            console.error('Error adding new PRO row:', error);
+            alert('Failed to add new PRO row. Please try again.');
+        }
+    });
+
+    fetchData();
+</script>
+
+</body>
+</html>
