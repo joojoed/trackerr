@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Row Adder</title>
+    <title>Row Viewer and Editor</title>
     <style>
+        /* Global Styles */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f7f9fc;
@@ -23,6 +24,7 @@
             text-align: center;
         }
 
+        /* Container Styles */
         .data-container {
             background-color: #ffffff;
             border-radius: 12px;
@@ -33,8 +35,30 @@
             margin-bottom: 30px;
         }
 
+        .department-container {
+            background-color: #f1f3f7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .department-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            width: 100%;
+            color: #34495e;
+            font-size: 18px;
+            border-bottom: 2px solid #e7e9ee;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+        }
+
         .field-group {
+            flex: 1 1 calc(33.33% - 20px);
             margin: 10px;
+            min-width: 200px;
         }
 
         label {
@@ -60,6 +84,7 @@
             outline: none;
         }
 
+        /* Button Styles */
         button {
             padding: 12px 24px;
             margin-top: 15px;
@@ -71,6 +96,8 @@
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+            display: inline-block;
+            margin-right: 10px;
         }
 
         button:hover {
@@ -78,83 +105,173 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
         }
+
+        button:disabled {
+            background-color: #bbbbbb;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-<h1>Add a New Row</h1>
+<h1>Row Viewer and Editor</h1>
 
-<div class="data-container" id="dataInput">
-    <!-- Input fields will be dynamically inserted here -->
+<div class="data-container">
+    <div id="rowNumber">Row #: </div>
+    <div id="dataDisplay">
+        <!-- Row data will be dynamically inserted here -->
+    </div>
+
+    <div class="button-container">
+        <button id="prevButton" disabled>Previous</button>
+        <button id="nextButton" disabled>Next</button>
+        <button id="editButton">Edit</button>
+        <button id="newRowButton">Add New Row</button> <!-- New Button -->
+    </div>
 </div>
 
-<button id="addButton">Add Row</button>
-
 <script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbwMHBULGNM1IXZ1z-lebIVcL-hpisnUul6u3ZNDDx-bCzvx5wKuQRHZcS7f6B2P_S4/exec'; // Replace with your script URL
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec';
+    let data = [];
     let headers = [];
+    let currentIndex = 1;
 
-    async function fetchHeaders() {
+    async function fetchData() {
         try {
             const response = await fetch(webAppUrl);
-            const data = await response.json();
-            if (data.length > 0) {
+            data = await response.json();
+            if (data.length > 1) {
                 headers = data[0];
-                populateInputFields(headers);
+                document.getElementById('nextButton').disabled = false;
+                showRow(currentIndex);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
 
-    function populateInputFields(fields) {
-        const dataInput = document.getElementById('dataInput');
-        dataInput.innerHTML = '';
-        
-        fields.forEach((header, index) => {
-            let fieldGroup = document.createElement('div');
-            fieldGroup.className = 'field-group';
-            
-            let labelElement = document.createElement('label');
-            labelElement.htmlFor = `cell-${index}`;
-            labelElement.textContent = header + ':';
-            
-            let inputElement = document.createElement('input');
-            inputElement.type = 'text';
-            inputElement.className = 'data-cell';
-            inputElement.id = `cell-${index}`;
-            
-            fieldGroup.appendChild(labelElement);
-            fieldGroup.appendChild(inputElement);
-            dataInput.appendChild(fieldGroup);
-        });
-    }
+    function showRow(index) {
+        if (index >= 1 && index < data.length) {
+            document.getElementById('rowNumber').innerText = `Row #: ${index}`;
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.innerHTML = '';
 
-    document.getElementById('addButton').addEventListener('click', async () => {
-        let newValues = headers.map((_, index) => document.getElementById(`cell-${index}`).value);
-        
-        try {
-            const response = await fetch(webAppUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'add', values: newValues })
+            let hrContainer = document.createElement('div');
+            hrContainer.className = 'department-container';
+            hrContainer.innerHTML = `<div class="department-title">HR Department</div>`;
+
+            let proContainer = document.createElement('div');
+            proContainer.className = 'department-container';
+            proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
+
+            data[index].forEach((value, colIndex) => {
+                let fieldGroup = document.createElement('div');
+                fieldGroup.className = 'field-group';
+
+                let labelElement = document.createElement('label');
+                labelElement.htmlFor = `cell-${colIndex}`;
+                labelElement.textContent = headers[colIndex] + ':';
+
+                let inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.value = value;
+                inputElement.className = 'data-cell';
+                inputElement.id = `cell-${colIndex}`;
+
+                fieldGroup.appendChild(labelElement);
+                fieldGroup.appendChild(inputElement);
+
+                if (colIndex < 13) {
+                    hrContainer.appendChild(fieldGroup);
+                } else {
+                    proContainer.appendChild(fieldGroup);
+                }
             });
 
-            const result = await response.json();
-            if (result.result === 'success') {
-                alert('Row added successfully.');
-                // Optionally clear input fields
-                populateInputFields(headers);
-            } else {
-                alert('Failed to add row. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error adding row:', error);
-            alert('Failed to add row. Please try again.');
+            dataDisplay.appendChild(hrContainer);
+            dataDisplay.appendChild(proContainer);
+            checkNavigationButtons();
+        }
+    }
+
+    function checkNavigationButtons() {
+        document.getElementById('prevButton').disabled = currentIndex <= 1;
+        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
+    }
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentIndex > 1) {
+            currentIndex--;
+            showRow(currentIndex);
         }
     });
 
-    fetchHeaders();
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (currentIndex < data.length - 1) {
+            currentIndex++;
+            showRow(currentIndex);
+        }
+    });
+
+    // Edit existing row
+    document.getElementById('editButton').addEventListener('click', async () => {
+        let newValues = [];
+        data[currentIndex].forEach((_, colIndex) => {
+            const value = document.getElementById(`cell-${colIndex}`).value;
+            newValues.push(value);
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
+            });
+            data[currentIndex] = newValues;
+            alert('Row updated successfully.');
+        } catch (error) {
+            console.error('Error updating data:', error);
+            alert('Failed to update row. Please try again.');
+        }
+    });
+
+    // Add new row
+    document.getElementById('newRowButton').addEventListener('click', async () => {
+        let newRow = new Array(headers.length).fill(""); // Create an array of empty strings
+        headers.forEach((header, colIndex) => {
+            const value = prompt(`Enter ${header}:`, "");
+            if (value !== null) {
+                newRow[colIndex] = value;
+            }
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'new', values: newRow })
+            });
+            data.push(newRow);
+            alert('New row added successfully.');
+            showRow(data.length - 1);
+            currentIndex = data.length - 1;
+            checkNavigationButtons();
+        } catch (error) {
+            console.error('Error adding new row:', error);
+            alert('Failed to add new row. Please try again.');
+        }
+    });
+
+    fetchData();
 </script>
 
 </body>
