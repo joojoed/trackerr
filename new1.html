@@ -134,7 +134,7 @@
 </div>
 
 <script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycby4tBDU2p7z2O8BLXrmf9PjmS8ifGBj88ESadgvCufBvheA4FOaaoNs-peoxnQ_Eng_/exec';
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbw6SOsYGp2SzG5dNcT6vdyAXSnimqXORckHTyVfFj_E1ta71NVl8KdqKd0qV7xldSy8/exec';
     let data = [];
     let headers = [];
     let currentIndex = 1;
@@ -144,7 +144,7 @@
             const response = await fetch(webAppUrl);
             data = await response.json();
             if (data.length > 0) {
-                headers = data[0]; // assuming first row is headers
+                headers = data[0];
                 document.getElementById('nextButton').disabled = false;
                 showRow(currentIndex);
             }
@@ -272,7 +272,7 @@
 
                     if (!response.ok) throw new Error('Failed to delete row');
                     data.splice(currentIndex, 1);
-                    if (currentIndex > data.length - 1) currentIndex--;
+                    currentIndex = Math.min(currentIndex, data.length - 1);
                     showRow(currentIndex);
                     alert('Row deleted successfully.');
                 } catch (error) {
