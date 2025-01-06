@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Row Viewer and Editor</title>
+    <title>Row Adder</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -33,30 +33,8 @@
             margin-bottom: 30px;
         }
 
-        .department-container {
-            background-color: #f1f3f7;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .department-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            width: 100%;
-            color: #34495e;
-            font-size: 18px;
-            border-bottom: 2px solid #e7e9ee;
-            padding-bottom: 5px;
-            text-transform: uppercase;
-        }
-
         .field-group {
-            flex: 1 1 calc(33.33% - 20px);
             margin: 10px;
-            min-width: 200px;
         }
 
         label {
@@ -93,8 +71,6 @@
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
-            display: inline-block;
-            margin-right: 10px;
         }
 
         button:hover {
@@ -102,182 +78,83 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
         }
-
-        button:disabled {
-            background-color: #bbbbbb;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        .button-container {
-            text-align: center;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
 
-<h1>Row Viewer and Editor</h1>
+<h1>Add a New Row</h1>
 
-<div class="data-container">
-    <div id="rowNumber">Row #: </div>
-    <div id="dataDisplay"></div>
-
-    <div class="button-container">
-        <button id="prevButton" disabled>Previous</button>
-        <button id="nextButton" disabled>Next</button>
-        <button id="editButton">Edit</button>
-        <button id="addButton">Add</button>
-        <button id="deleteButton">Delete</button>
-    </div>
+<div class="data-container" id="dataInput">
+    <!-- Input fields will be dynamically inserted here -->
 </div>
 
-<script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbwu8G2viZEEYUOBKGnq682m59C0zX5NOZxM6PgeuYv35OCSbKGhmMqoVjlXgrQ_yY2_/exec'; // Replace 'YOUR_SCRIPT_ID' with your script URL
-    let data = [];
-    let headers = [];
-    let currentIndex = 1;
+<button id="addButton">Add Row</button>
 
-    async function fetchData() {
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbwMHBULGNM1IXZ1z-lebIVcL-hpisnUul6u3ZNDDx-bCzvx5wKuQRHZcS7f6B2P_S4/exec'; // Replace with your script URL
+    let headers = [];
+
+    async function fetchHeaders() {
         try {
             const response = await fetch(webAppUrl);
-            data = await response.json();
+            const data = await response.json();
             if (data.length > 0) {
-                headers = data[0]; // Assuming the first row is headers
-                document.getElementById('nextButton').disabled = false;
-                showRow(currentIndex);
+                headers = data[0];
+                populateInputFields(headers);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
 
-    function showRow(index) {
-        if (index >= 1 && index < data.length) {
-            document.getElementById('rowNumber').innerText = `Row #: ${index}`;
-            const dataDisplay = document.getElementById('dataDisplay');
-            dataDisplay.innerHTML = '';
-
-            let hrContainer = document.createElement('div');
-            hrContainer.className = 'department-container';
-            hrContainer.innerHTML = `<div class="department-title">HR Department</div>`;
-
-            let proContainer = document.createElement('div');
-            proContainer.className = 'department-container';
-            proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
-
-            data[index].forEach((value, colIndex) => {
-                let fieldGroup = document.createElement('div');
-                fieldGroup.className = 'field-group';
-
-                let labelElement = document.createElement('label');
-                labelElement.htmlFor = `cell-${colIndex}`;
-                labelElement.textContent = headers[colIndex] + ':';
-
-                let inputElement = document.createElement('input');
-                inputElement.type = 'text';
-                inputElement.value = value;
-                inputElement.className = 'data-cell';
-                inputElement.id = `cell-${colIndex}`;
-
-                fieldGroup.appendChild(labelElement);
-                fieldGroup.appendChild(inputElement);
-
-                if (colIndex < 13) {
-                    hrContainer.appendChild(fieldGroup);
-                } else {
-                    proContainer.appendChild(fieldGroup);
-                }
-            });
-
-            dataDisplay.appendChild(hrContainer);
-            dataDisplay.appendChild(proContainer);
-            checkNavigationButtons();
-        }
+    function populateInputFields(fields) {
+        const dataInput = document.getElementById('dataInput');
+        dataInput.innerHTML = '';
+        
+        fields.forEach((header, index) => {
+            let fieldGroup = document.createElement('div');
+            fieldGroup.className = 'field-group';
+            
+            let labelElement = document.createElement('label');
+            labelElement.htmlFor = `cell-${index}`;
+            labelElement.textContent = header + ':';
+            
+            let inputElement = document.createElement('input');
+            inputElement.type = 'text';
+            inputElement.className = 'data-cell';
+            inputElement.id = `cell-${index}`;
+            
+            fieldGroup.appendChild(labelElement);
+            fieldGroup.appendChild(inputElement);
+            dataInput.appendChild(fieldGroup);
+        });
     }
 
-    function checkNavigationButtons() {
-        document.getElementById('prevButton').disabled = currentIndex <= 1;
-        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
-    }
-
-    async function performRequest(action, requestData) {
+    document.getElementById('addButton').addEventListener('click', async () => {
+        let newValues = headers.map((_, index) => document.getElementById(`cell-${index}`).value);
+        
         try {
             const response = await fetch(webAppUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify({ action: 'add', values: newValues })
             });
+
             const result = await response.json();
-            return result;
+            if (result.result === 'success') {
+                alert('Row added successfully.');
+                // Optionally clear input fields
+                populateInputFields(headers);
+            } else {
+                alert('Failed to add row. Please try again.');
+            }
         } catch (error) {
-            console.error('Error with fetch operation:', error);
-            return { result: 'failure' };
-        }
-    }
-
-    document.getElementById('prevButton').addEventListener('click', () => {
-        if (currentIndex > 1) {
-            currentIndex--;
-            showRow(currentIndex);
-        }
-    });
-
-    document.getElementById('nextButton').addEventListener('click', () => {
-        if (currentIndex < data.length - 1) {
-            currentIndex++;
-            showRow(currentIndex);
-        }
-    });
-
-    document.getElementById('editButton').addEventListener('click', async () => {
-        let newValues = [];
-        data[currentIndex].forEach((_, colIndex) => {
-            const value = document.getElementById(`cell-${colIndex}`).value;
-            newValues.push(value);
-        });
-
-        const result = await performRequest('edit', { action: 'edit', row: currentIndex, values: newValues });
-        if (result.result === 'success') {
-            data[currentIndex] = newValues;
-            alert('Row updated successfully.');
-        } else {
-            alert('Failed to update row. Please try again.');
-        }
-    });
-
-    document.getElementById('addButton').addEventListener('click', async () => {
-        let newValues = headers.map(() => ''); // Initialize with empty values
-        const result = await performRequest('add', { action: 'add', values: newValues });
-        if (result.result === 'success') {
-            data.push(newValues); // Update local data
-            currentIndex = data.length - 1;
-            showRow(currentIndex);
-            alert('Row added successfully.');
-        } else {
+            console.error('Error adding row:', error);
             alert('Failed to add row. Please try again.');
         }
     });
 
-    document.getElementById('deleteButton').addEventListener('click', async () => {
-        if (currentIndex >= 1 && currentIndex < data.length) {
-            const confirmDelete = confirm('Are you sure you want to delete this row?');
-            if (confirmDelete) {
-                const result = await performRequest('delete', { action: 'delete', row: currentIndex });
-                if (result.result === 'success') {
-                    data.splice(currentIndex, 1); // Remove from local data
-                    currentIndex = Math.min(currentIndex, data.length - 1);
-                    showRow(currentIndex);
-                    alert('Row deleted successfully.');
-                } else {
-                    alert('Failed to delete row. Please try again.');
-                }
-            }
-        }
-    });
-
-    fetchData();
+    fetchHeaders();
 </script>
 
 </body>
