@@ -134,7 +134,7 @@
 </div>
 
 <script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbyrw5v6Q5Oyw1dAYsUpsMHxEi3Au2rvOJTttV_Tm8vSLaZ6Xu7Fv6MbEez0cBamlgXy/exec';
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycby4tBDU2p7z2O8BLXrmf9PjmS8ifGBj88ESadgvCufBvheA4FOaaoNs-peoxnQ_Eng_/exec';
     let data = [];
     let headers = [];
     let currentIndex = 1;
@@ -143,8 +143,8 @@
         try {
             const response = await fetch(webAppUrl);
             data = await response.json();
-            if (data.length > 1) {
-                headers = data[0];
+            if (data.length > 0) {
+                headers = data[0]; // assuming first row is headers
                 document.getElementById('nextButton').disabled = false;
                 showRow(currentIndex);
             }
@@ -158,6 +158,14 @@
             document.getElementById('rowNumber').innerText = `Row #: ${index}`;
             const dataDisplay = document.getElementById('dataDisplay');
             dataDisplay.innerHTML = '';
+
+            let hrContainer = document.createElement('div');
+            hrContainer.className = 'department-container';
+            hrContainer.innerHTML = `<div class="department-title">HR Department</div>`;
+
+            let proContainer = document.createElement('div');
+            proContainer.className = 'department-container';
+            proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
 
             data[index].forEach((value, colIndex) => {
                 let fieldGroup = document.createElement('div');
@@ -244,7 +252,7 @@
             data.push(newValues);
             currentIndex = data.length - 1;
             showRow(currentIndex);
-            alert('Row added successfully.');
+            alert('Row added and saved successfully.');
         } catch (error) {
             console.error('Error adding row:', error);
             alert('Failed to add row. Please try again.');
