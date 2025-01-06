@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Row Viewer and Editor</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #2a2a2a;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Container Styles */
+        .data-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: calc(100% - 30px);
+            max-width: 1200px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .department-container {
+            background-color: #f1f3f7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .department-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            width: 100%;
+            color: #34495e;
+            font-size: 18px;
+            border-bottom: 2px solid #e7e9ee;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .field-group {
+            flex: 1 1 calc(33.33% - 20px);
+            margin: 10px;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .data-cell {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .data-cell:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        /* Button Styles */
+        button {
+            padding: 12px 24px;
+            margin-top: 15px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        }
+
+        button:disabled {
+            background-color: #bbbbbb;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Row Viewer and Editor</h1>
+
+<div class="data-container">
+    <div id="rowNumber">Row #: </div>
+    <div id="dataDisplay">
+        <!-- Row data will be dynamically inserted here -->
+    </div>
+
+    <div class="button-container">
+        <button id="prevButton" disabled>Previous</button>
+        <button id="nextButton" disabled>Next</button>
+        <button id="editButton">Edit</button>
+        <button id="addButton">Add</button>
+        <button id="deleteButton">Delete</button>
+    </div>
+</div>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzHPZ5TItnpJ1smGdsn2SNIGbGrB5QPaOn4WkaOL0FHujYUMbDmhEk5q3Dt2zuwJcsL/exec';
+    let data = [];
+    let headers = [];
+    let currentIndex = 1;
+
+    async function fetchData() {
+        try {
+            const response = await fetch(webAppUrl);
+            data = await response.json();
+            if (data.length > 1) {
+                headers = data[0];
+                document.getElementById('nextButton').disabled = false;
+                showRow(currentIndex);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    function showRow(index) {
+        if (index >= 1 && index < data.length) {
+            document.getElementById('rowNumber').innerText = `Row #: ${index}`;
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.innerHTML = '';
+
+            let hrContainer = document.createElement('div');
+            hrContainer.className = 'department-container';
+            hrContainer.innerHTML = `<div class="department-title">HR Department</div>`;
+
+            let proContainer = document.createElement('div');
+            proContainer.className = 'department-container';
+            proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
+
+            data[index].forEach((value, colIndex) => {
+                let fieldGroup = document.createElement('div');
+                fieldGroup.className = 'field-group';
+
+                let labelElement = document.createElement('label');
+                labelElement.htmlFor = `cell-${colIndex}`;
+                labelElement.textContent = headers[colIndex] + ':';
+
+                let inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.value = value;
+                inputElement.className = 'data-cell';
+                inputElement.id = `cell-${colIndex}`;
+
+                fieldGroup.appendChild(labelElement);
+                fieldGroup.appendChild(inputElement);
+
+                if (colIndex < 13) {
+                    hrContainer.appendChild(fieldGroup);
+                } else {
+                    proContainer.appendChild(fieldGroup);
+                }
+            });
+
+            dataDisplay.appendChild(hrContainer);
+            dataDisplay.appendChild(proContainer);
+            checkNavigationButtons();
+        }
+    }
+
+    function checkNavigationButtons() {
+        document.getElementById('prevButton').disabled = currentIndex <= 1;
+        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
+    }
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentIndex > 1) {
+            currentIndex--;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (currentIndex < data.length - 1) {
+            currentIndex++;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('editButton').addEventListener('click', async () => {
+        let newValues = [];
+        data[currentIndex].forEach((_, colIndex) => {
+            const value = document.getElementById(`cell-${colIndex}`).value;
+            newValues.push(value);
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex, values: newValues })
+            });
+            data[currentIndex] = newValues;
+            alert('Row updated successfully.');
+        } catch (error) {
+            console.error('Error updating data:', error);
+            alert('Failed to update row. Please try again.');
+        }
+    });
+
+    document.getElementById('addButton').addEventListener('click', async () => {
+        let newValues = headers.map(() => '');
+        data.push(newValues);
+        currentIndex = data.length - 1;
+        showRow(currentIndex);
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'add', values: newValues })
+            });
+            alert('Row added successfully.');
+        } catch (error) {
+            console.error('Error adding row:', error);
+            alert('Failed to add row. Please try again.');
+        }
+    });
+
+    document.getElementById('deleteButton').addEventListener('click', async () => {
+        if (currentIndex >= 1 && currentIndex < data.length) {
+            const confirmDelete = confirm('Are you sure you want to delete this row?');
+            if (confirmDelete) {
+                try {
+                    await fetch(webAppUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        mode: 'no-cors',
+                        body: JSON.stringify({ action: 'delete', row: currentIndex })
+                    });
+                    data.splice(currentIndex, 1);
+                    if (currentIndex > data.length - 1) {
+                        currentIndex--;
+                    }
+                    showRow(currentIndex);
+                    alert('Row deleted successfully.');
+                } catch (error) {
+                    console.error('Error deleting row:', error);
+                    alert('Failed to delete row. Please try again.');
+                }
+            }
+        }
+    });
+
+    fetchData();
+</script>
+
+</body>
+</html>
