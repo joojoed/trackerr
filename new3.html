@@ -9,93 +9,97 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f7f9fc;
+            padding: 0;
             margin: 0;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            transform: scale(0.65); /* Scale the page to 65% */
+            transform-origin: 0 0; /* Ensure the scale transform starts from the top-left corner */
         }
 
         h1 {
             color: #2a2a2a;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             text-align: center;
         }
 
         /* Container Styles */
         .data-container {
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 900px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: calc(100% - 30px);
+            max-width: 1200px;
+            padding: 30px;
+            margin-bottom: 30px;
         }
 
         .department-container {
             background-color: #f1f3f7;
             border-radius: 8px;
-            padding: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
         }
 
         .department-title {
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             width: 100%;
             color: #34495e;
-            font-size: 16px;
+            font-size: 18px;
             border-bottom: 2px solid #e7e9ee;
             padding-bottom: 5px;
             text-transform: uppercase;
         }
 
         .field-group {
-            flex: 1 1 calc(50% - 10px);
-            margin: 5px;
+            flex: 1 1 calc(33.33% - 20px);
+            margin: 10px;
             min-width: 200px;
         }
 
         label {
             display: block;
             font-weight: 500;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             color: #555;
             font-size: 14px;
         }
 
         .data-cell {
-            width: calc(100% - 10px);
-            padding: 8px;
+            width: 100%;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 14px;
             transition: all 0.3s ease;
-            outline: none;
         }
 
         .data-cell:focus {
             border-color: #3498db;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
         }
 
         /* Button Styles */
         button {
-            padding: 10px 20px;
-            margin-top: 10px;
+            padding: 12px 24px;
+            margin-top: 15px;
             color: #fff;
             background-color: #007bff;
             border: none;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
             display: inline-block;
-            margin-right: 5px;
+            margin-right: 10px;
         }
 
         button:hover {
@@ -108,11 +112,12 @@
             background-color: #bbbbbb;
             cursor: not-allowed;
             box-shadow: none;
+            transform: none;
         }
 
         .button-container {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -130,7 +135,7 @@
         <button id="prevButton" disabled>Previous</button>
         <button id="nextButton" disabled>Next</button>
         <button id="editButton">Edit</button>
-        <button id="newRowButton">Add New Row</button>
+        <button id="newRowButton">Add New Row</button> <!-- New Button -->
     </div>
 </div>
 
@@ -174,56 +179,35 @@
             let proContainer = document.createElement('div');
             proContainer.className = 'department-container';
             proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
-         
-            // HR Fields
-            const hrFields = [
-                "Candidate Name", "Position Offered", "Entity", "Department", 
-                "Offer letter issued on", "Ack. By Candidate on", "Current Employment Status", 
-                "Tentative Availibility", "Relevant Doc. Received", "Pending Doc", 
-                "Candidate's Contact #", "MOL initiated on", "Onboarded on", "Remarks"
-            ];
 
-            // PRO Fields
-            const proFields = [
-                "MOL issued on", "COS issued on", "Medical Test on", "EID issued", "Remarks"
-            ];
+            data[index].forEach((value, colIndex) => {
+                let displayValue = value;
 
-            hrFields.forEach((field, colIndex) => {
+                if (!isNaN(Date.parse(value))) {
+                    displayValue = formatDate(value);
+                }
+
                 let fieldGroup = document.createElement('div');
                 fieldGroup.className = 'field-group';
 
                 let labelElement = document.createElement('label');
                 labelElement.htmlFor = `cell-${colIndex}`;
-                labelElement.textContent = field + ':';
+                labelElement.textContent = headers[colIndex] + ':';
 
                 let inputElement = document.createElement('input');
                 inputElement.type = 'text';
-                inputElement.value = data[index][colIndex] || ''; // Retrieve data for HR department
+                inputElement.value = displayValue;
                 inputElement.className = 'data-cell';
                 inputElement.id = `cell-${colIndex}`;
 
                 fieldGroup.appendChild(labelElement);
                 fieldGroup.appendChild(inputElement);
-                hrContainer.appendChild(fieldGroup);
-            });
 
-            proFields.forEach((field, colIndex) => {
-                let fieldGroup = document.createElement('div');
-                fieldGroup.className = 'field-group';
-
-                let labelElement = document.createElement('label');
-                labelElement.htmlFor = `cell-${colIndex + hrFields.length}`;
-                labelElement.textContent = field + ':';
-
-                let inputElement = document.createElement('input');
-                inputElement.type = 'text';
-                inputElement.value = data[index][colIndex + hrFields.length] || ''; // Retrieve data for PRO department
-                inputElement.className = 'data-cell';
-                inputElement.id = `cell-${colIndex + hrFields.length}`;
-
-                fieldGroup.appendChild(labelElement);
-                fieldGroup.appendChild(inputElement);
-                proContainer.appendChild(fieldGroup);
+                if (colIndex < 14) {
+                    hrContainer.appendChild(fieldGroup);
+                } else {
+                    proContainer.appendChild(fieldGroup);
+                }
             });
 
             dataDisplay.appendChild(hrContainer);
