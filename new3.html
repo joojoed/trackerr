@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Row Viewer and Editor</title>
+    <title>Row Editor</title>
     <style>
         /* Global Styles */
         body {
@@ -14,16 +14,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            height: 100vh;
-            overflow: hidden;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         h1 {
             color: #2a2a2a;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             text-align: center;
-            font-size: 20px;
+            font-size: 18px;
         }
 
         /* Container Styles */
@@ -32,89 +31,57 @@
             border-radius: 6px;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
             padding: 10px;
-            margin-bottom: 10px;
-            overflow-y: auto;
-            height: calc(100vh - 100px);
-        }
-
-        .department-container {
-            background-color: #f1f3f7;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .department-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-            width: 100%;
-            color: #34495e;
-            font-size: 14px;
-            border-bottom: 2px solid #e7e9ee;
-            padding-bottom: 2px;
-            text-transform: uppercase;
+            overflow: hidden;
         }
 
         .field-group {
-            flex: 1 1 calc(50% - 10px);
-            margin: 5px;
-            min-width: 140px;
+            display: flex;
+            margin-bottom: 5px;
+            align-items: center;
         }
 
         label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 4px;
             color: #555;
-            font-size: 12px;
+            font-size: 10px;
+            width: 70px;
         }
 
         .data-cell {
-            width: 100%;
-            padding: 6px;
+            flex: 1;
+            padding: 4px;
             border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 12px;
-            transition: all 0.3s ease;
+            border-radius: 3px;
+            font-size: 10px;
         }
 
         .data-cell:focus {
             border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
             outline: none;
         }
 
         /* Button Styles */
         button {
-            padding: 8px 16px;
-            margin-top: 8px;
+            padding: 4px 8px;
+            margin-top: 5px;
             color: #fff;
             background-color: #007bff;
             border: none;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 12px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
-            display: inline-block;
+            transition: background-color 0.3s ease;
             margin-right: 5px;
         }
 
         button:hover {
             background-color: #0056b3;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(0, 123, 255, 0.4);
         }
 
         button:disabled {
             background-color: #bbbbbb;
             cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
         }
 
         .button-container {
@@ -125,7 +92,7 @@
 </head>
 <body>
 
-<h1>Row Viewer and Editor</h1>
+<h1>Row Editor</h1>
 
 <div class="data-container">
     <div id="rowNumber">Row #: </div>
@@ -134,10 +101,10 @@
     </div>
 
     <div class="button-container">
-        <button id="prevButton" disabled>Previous</button>
+        <button id="prevButton" disabled>Prev</button>
         <button id="nextButton" disabled>Next</button>
         <button id="editButton">Edit</button>
-        <button id="newRowButton">Add New Row</button>
+        <button id="newRowButton">New Row</button>
     </div>
 </div>
 
@@ -171,20 +138,12 @@
     function showRow(index) {
         if (index >= 1 && index < data.length) {
             document.getElementById('rowNumber').innerText = `Row #: ${index}`;
+
             const dataDisplay = document.getElementById('dataDisplay');
             dataDisplay.innerHTML = '';
 
-            let hrContainer = document.createElement('div');
-            hrContainer.className = 'department-container';
-            hrContainer.innerHTML = `<div class="department-title">HR Department</div>`;
-
-            let proContainer = document.createElement('div');
-            proContainer.className = 'department-container';
-            proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
-
             data[index].forEach((value, colIndex) => {
                 let displayValue = value;
-
                 if (!isNaN(Date.parse(value))) {
                     displayValue = formatDate(value);
                 }
@@ -204,16 +163,9 @@
 
                 fieldGroup.appendChild(labelElement);
                 fieldGroup.appendChild(inputElement);
-
-                if (colIndex < 14) {
-                    hrContainer.appendChild(fieldGroup);
-                } else {
-                    proContainer.appendChild(fieldGroup);
-                }
+                dataDisplay.appendChild(fieldGroup);
             });
 
-            dataDisplay.appendChild(hrContainer);
-            dataDisplay.appendChild(proContainer);
             checkNavigationButtons();
         }
     }
@@ -276,7 +228,7 @@
                 body: JSON.stringify({ action: 'new', values: newRow })
             });
             data.push(newRow);
-            alert('New row added successfully.');
+            alert('New row added.');
             showRow(data.length - 1);
             currentIndex = data.length - 1;
             checkNavigationButtons();
