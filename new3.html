@@ -31,16 +31,15 @@
             max-width: 900px;
             padding: 20px;
             margin-bottom: 20px;
-            overflow: auto;
         }
 
         .department-container {
             background-color: #f1f3f7;
             border-radius: 8px;
             padding: 15px;
-            margin-bottom: 15px;
             display: flex;
             flex-wrap: wrap;
+            justify-content: space-between;
         }
 
         .department-title {
@@ -55,7 +54,7 @@
         }
 
         .field-group {
-            flex: 1 1 calc(33.33% - 10px);
+            flex: 1 1 calc(50% - 10px);
             margin: 5px;
             min-width: 200px;
         }
@@ -69,7 +68,7 @@
         }
 
         .data-cell {
-            width: 100%;
+            width: calc(100% - 10px);
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -175,35 +174,56 @@
             let proContainer = document.createElement('div');
             proContainer.className = 'department-container';
             proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
+         
+            // HR Fields
+            const hrFields = [
+                "Candidate Name", "Position Offered", "Entity", "Department", 
+                "Offer letter issued on", "Ack. By Candidate on", "Current Employment Status", 
+                "Tentative Availibility", "Relevant Doc. Received", "Pending Doc", 
+                "Candidate's Contact #", "MOL initiated on", "Onboarded on", "Remarks"
+            ];
 
-            data[index].forEach((value, colIndex) => {
-                let displayValue = value;
+            // PRO Fields
+            const proFields = [
+                "MOL issued on", "COS issued on", "Medical Test on", "EID issued", "Remarks"
+            ];
 
-                if (!isNaN(Date.parse(value))) {
-                    displayValue = formatDate(value);
-                }
-
+            hrFields.forEach((field, colIndex) => {
                 let fieldGroup = document.createElement('div');
                 fieldGroup.className = 'field-group';
 
                 let labelElement = document.createElement('label');
                 labelElement.htmlFor = `cell-${colIndex}`;
-                labelElement.textContent = headers[colIndex] + ':';
+                labelElement.textContent = field + ':';
 
                 let inputElement = document.createElement('input');
                 inputElement.type = 'text';
-                inputElement.value = displayValue;
+                inputElement.value = data[index][colIndex] || ''; // Retrieve data for HR department
                 inputElement.className = 'data-cell';
                 inputElement.id = `cell-${colIndex}`;
 
                 fieldGroup.appendChild(labelElement);
                 fieldGroup.appendChild(inputElement);
+                hrContainer.appendChild(fieldGroup);
+            });
 
-                if (colIndex < 17) {
-                    hrContainer.appendChild(fieldGroup);
-                } else {
-                    proContainer.appendChild(fieldGroup);
-                }
+            proFields.forEach((field, colIndex) => {
+                let fieldGroup = document.createElement('div');
+                fieldGroup.className = 'field-group';
+
+                let labelElement = document.createElement('label');
+                labelElement.htmlFor = `cell-${colIndex + hrFields.length}`;
+                labelElement.textContent = field + ':';
+
+                let inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.value = data[index][colIndex + hrFields.length] || ''; // Retrieve data for PRO department
+                inputElement.className = 'data-cell';
+                inputElement.id = `cell-${colIndex + hrFields.length}`;
+
+                fieldGroup.appendChild(labelElement);
+                fieldGroup.appendChild(inputElement);
+                proContainer.appendChild(fieldGroup);
             });
 
             dataDisplay.appendChild(hrContainer);
