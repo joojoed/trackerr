@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Row Viewer and Editor</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            padding: 5px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #2a2a2a;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        /* Container Styles */
+        .data-container {
+            background-color: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow-y: auto;
+            height: calc(100vh - 100px);
+        }
+
+        .department-container {
+            background-color: #f1f3f7;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .department-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            width: 100%;
+            color: #34495e;
+            font-size: 14px;
+            border-bottom: 2px solid #e7e9ee;
+            padding-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .field-group {
+            flex: 1 1 calc(50% - 10px);
+            margin: 5px;
+            min-width: 140px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #555;
+            font-size: 12px;
+        }
+
+        .data-cell {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .data-cell:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        /* Button Styles */
+        button {
+            padding: 8px 16px;
+            margin-top: 8px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 123, 255, 0.4);
+        }
+
+        button:disabled {
+            background-color: #bbbbbb;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Row Viewer and Editor</h1>
+
+<div class="data-container">
+    <div id="rowNumber">Row #: </div>
+    <div id="dataDisplay">
+        <!-- Row data will be dynamically inserted here -->
+    </div>
+
+    <div class="button-container">
+        <button id="prevButton" disabled>Previous</button>
+        <button id="nextButton" disabled>Next</button>
+        <button id="editButton">Edit</button>
+        <button id="newRowButton">Add New Row</button>
+    </div>
+</div>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbxS2hu32-wXrzi8kTHHZpVViKZG2fvOsERrqJbeYJ_YjYMRiimIBTEls7gnyITVDPmt/exec';
+    let data = [];
+    let headers = [];
+    let currentIndex = 1;
+
+    async function fetchData() {
+        try {
+            const response = await fetch(webAppUrl);
+            data = await response.json();
+            if (data.length > 1) {
+                headers = data[0];
+                document.getElementById('nextButton').disabled = false;
+                showRow(currentIndex);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return !isNaN(date) 
+            ? new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
+            : dateString;
+    }
+
+    function showRow(index) {
+        if (index >= 1 && index < data.length) {
+            document.getElementById('rowNumber').innerText = `Row #: ${index}`;
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.innerHTML = '';
+
+            let hrContainer = document.createElement('div');
+            hrContainer.className = 'department-container';
+            hrContainer.innerHTML = `<div class="department-title">HR Department</div>`;
+
+            let proContainer = document.createElement('div');
+            proContainer.className = 'department-container';
+            proContainer.innerHTML = `<div class="department-title">PRO Department</div>`;
+
+            data[index].forEach((value, colIndex) => {
+                let displayValue = value;
+
+                if (!isNaN(Date.parse(value))) {
+                    displayValue = formatDate(value);
+                }
+
+                let fieldGroup = document.createElement('div');
+                fieldGroup.className = 'field-group';
+
+                let labelElement = document.createElement('label');
+                labelElement.htmlFor = `cell-${colIndex}`;
+                labelElement.textContent = headers[colIndex] + ':';
+
+                let inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.value = displayValue;
+                inputElement.className = 'data-cell';
+                inputElement.id = `cell-${colIndex}`;
+
+                fieldGroup.appendChild(labelElement);
+                fieldGroup.appendChild(inputElement);
+
+                if (colIndex < 14) {
+                    hrContainer.appendChild(fieldGroup);
+                } else {
+                    proContainer.appendChild(fieldGroup);
+                }
+            });
+
+            dataDisplay.appendChild(hrContainer);
+            dataDisplay.appendChild(proContainer);
+            checkNavigationButtons();
+        }
+    }
+
+    function checkNavigationButtons() {
+        document.getElementById('prevButton').disabled = currentIndex <= 1;
+        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
+    }
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentIndex > 1) {
+            currentIndex--;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (currentIndex < data.length - 1) {
+            currentIndex++;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('editButton').addEventListener('click', async () => {
+        let newValues = [];
+        data[currentIndex].forEach((_, colIndex) => {
+            const value = document.getElementById(`cell-${colIndex}`).value;
+            newValues.push(value);
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
+            });
+            data[currentIndex] = newValues;
+            alert('Row updated successfully.');
+        } catch (error) {
+            console.error('Error updating data:', error);
+            alert('Failed to update row. Please try again.');
+        }
+    });
+
+    document.getElementById('newRowButton').addEventListener('click', async () => {
+        let newRow = new Array(headers.length).fill("");
+        headers.forEach((header, colIndex) => {
+            const value = prompt(`Enter ${header}:`, "");
+            if (value !== null) {
+                newRow[colIndex] = value;
+            }
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'new', values: newRow })
+            });
+            data.push(newRow);
+            alert('New row added successfully.');
+            showRow(data.length - 1);
+            currentIndex = data.length - 1;
+            checkNavigationButtons();
+        } catch (error) {
+            console.error('Error adding new row:', error);
+            alert('Failed to add new row. Please try again.');
+        }
+    });
+
+    fetchData();
+</script>
+
+</body>
+</html>
