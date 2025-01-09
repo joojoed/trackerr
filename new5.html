@@ -25,8 +25,24 @@
             font-size: 1.5em;
             text-align: center;
         }
+        
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+            width: 100%;
+            justify-content: center;
+        }
 
-        /* Container Styles */
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            flex: 1;
+        }
+
         .data-container {
             background-color: #ffffff;
             border-radius: 8px;
@@ -85,7 +101,7 @@
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            font-size: 0.8em;
+            font-size: 0.9em;
             transition: all 0.3s ease;
         }
 
@@ -93,11 +109,6 @@
             border-color: #3498db;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
             outline: none;
-        }
-
-        /* Style for Declined Fields */
-        .declined {
-            border-color: red !important;
         }
 
         /* Button Styles */
@@ -133,11 +144,22 @@
             box-shadow: none;
             transform: none;
         }
+
+        /* Highlight field with "declined" */
+        .declined-highlight {
+            background-color: #ffdddd;
+        }
     </style>
 </head>
 <body>
 
 <h1>Row Viewer and Editor</h1>
+
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search...">
+    <button id="searchButton">Search</button>
+    <button id="clearSearchButton">Clear</button>
+</div>
 
 <div class="data-container">
     <div class="department-flex">
@@ -176,11 +198,13 @@
     let data = [];
     let headers = [];
     let currentIndex = 1;
+    let filteredData = [];
 
     async function fetchData() {
         try {
             const response = await fetch(webAppUrl);
             data = await response.json();
+            filteredData = data.slice(1); // Exclude headers from filtering
             if (data.length > 1) {
                 headers = data[0];
                 document.getElementById('nextButton').disabled = false;
@@ -193,15 +217,13 @@
 
     function formatDate(dateString) {
         const date = new Date(dateString);
-        if (!isNaN(date)) {
-            const options = { year: 'numeric', month: 'short', day: '2-digit' };
-            return new Intl.DateTimeFormat('en-GB', options).format(date).replace(' ', '-');
-        }
-        return dateString;
+        return !isNaN(date)
+            ? new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
+            : dateString;
     }
 
     function showRow(index) {
-        if (index >= 1 && index < data.length) {
+        if (index >= 1 && index < filteredData.length + 1) {
             const recruitmentFields = document.getElementById('recruitment-fields');
             const hrFields = document.getElementById('hr-fields');
             const proFields = document.getElementById('pro-fields');
@@ -210,7 +232,7 @@
             hrFields.innerHTML = '';
             proFields.innerHTML = '';
 
-            data[index].forEach((value, colIndex) => {
+            filteredData[index - 1].forEach((value, colIndex) => {
                 let displayValue = value;
 
                 if (!isNaN(Date.parse(value))) {
@@ -230,15 +252,14 @@
                 inputElement.className = 'data-cell';
                 inputElement.id = `cell-${colIndex}`;
 
-                // Apply red border if the field value is "declined"
-                if (value.toLowerCase() === 'declined') {
-                    inputElement.classList.add('declined');
+                if (displayValue.toLowerCase() === "declined") {
+                    inputElement.classList.add('declined-highlight');
                 }
 
                 fieldGroup.appendChild(labelElement);
                 fieldGroup.appendChild(inputElement);
 
-                if (colIndex >= headers.length - 4) { // Last 4 columns for Recruitment
+                if (colIndex >= headers.length - 4) {
                     recruitmentFields.appendChild(fieldGroup);
                 } else if (colIndex < 14) { // Assuming 14 columns for HR Department
                     hrFields.appendChild(fieldGroup);
@@ -253,7 +274,7 @@
 
     function checkNavigationButtons() {
         document.getElementById('prevButton').disabled = currentIndex <= 1;
-        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
+        document.getElementById('nextButton').disabled = currentIndex >= filteredData.length;
     }
 
     document.getElementById('prevButton').addEventListener('click', () => {
@@ -264,7 +285,7 @@
     });
 
     document.getElementById('nextButton').addEventListener('click', () => {
-        if (currentIndex < data.length - 1) {
+        if (currentIndex < filteredData.length) {
             currentIndex++;
             showRow(currentIndex);
         }
@@ -272,7 +293,7 @@
 
     document.getElementById('editButton').addEventListener('click', async () => {
         let newValues = [];
-        data[currentIndex].forEach((_, colIndex) => {
+        filteredData[currentIndex - 1].forEach((_, colIndex) => {
             const value = document.getElementById(`cell-${colIndex}`).value;
             newValues.push(value);
         });
@@ -284,7 +305,7 @@
                 mode: 'no-cors',
                 body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
             });
-            data[currentIndex] = newValues;
+            filteredData[currentIndex - 1] = newValues;
             alert('Row updated successfully.');
         } catch (error) {
             console.error('Error updating data:', error);
@@ -293,7 +314,7 @@
     });
 
     document.getElementById('newRowButton').addEventListener('click', async () => {
-        let newRow = new Array(headers.length).fill("");
+        const newRow = new Array(headers.length).fill("");
         headers.forEach((header, colIndex) => {
             const value = prompt(`Enter ${header}:`, "");
             if (value !== null) {
@@ -309,14 +330,37 @@
                 body: JSON.stringify({ action: 'new', values: newRow })
             });
             data.push(newRow);
+            filteredData.push(newRow);
             alert('New row added successfully.');
-            showRow(data.length - 1);
-            currentIndex = data.length - 1;
+            showRow(filteredData.length);
+            currentIndex = filteredData.length;
             checkNavigationButtons();
         } catch (error) {
             console.error('Error adding new row:', error);
             alert('Failed to add new row. Please try again.');
         }
+    });
+
+    document.getElementById('searchButton').addEventListener('click', () => {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        filteredData = data.slice(1).filter(row => // Exclude headers from filtering
+            row.some(value => value.toLowerCase().includes(searchQuery))
+        );
+        if (filteredData.length > 0) {
+            currentIndex = 1;
+            showRow(currentIndex);
+            checkNavigationButtons();
+        } else {
+            alert('No matching records found.');
+        }
+    });
+
+    document.getElementById('clearSearchButton').addEventListener('click', () => {
+        document.getElementById('searchInput').value = '';
+        filteredData = data.slice(1);
+        currentIndex = 1;
+        showRow(currentIndex);
+        checkNavigationButtons();
     });
 
     fetchData();
