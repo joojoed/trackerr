@@ -37,20 +37,6 @@
             box-sizing: border-box;
         }
 
-        .search-container {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .search-box {
-            padding: 8px;
-            font-size: 1em;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-
         .department-flex {
             display: flex;
             gap: 20px;
@@ -103,12 +89,6 @@
             transition: all 0.3s ease;
         }
 
-        .data-cell.declined {
-            border-color: red;
-            color: red;
-            font-weight: bold;
-        }
-
         .data-cell:focus {
             border-color: #3498db;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
@@ -153,10 +133,6 @@
 <body>
 
 <h1>Row Viewer and Editor</h1>
-
-<div class="search-container">
-    <input type="text" id="searchBox" class="search-box" placeholder="Search...">
-</div>
 
 <div class="data-container">
     <div class="department-flex">
@@ -247,8 +223,9 @@
                 inputElement.className = 'data-cell';
                 inputElement.id = `cell-${colIndex}`;
 
-                if (displayValue.toLowerCase() === 'declined') {
-                    inputElement.classList.add('declined');
+                // Check if the value is "Declined" and apply red background color
+                if (displayValue.trim().toLowerCase() === 'declined') {
+                    inputElement.style.backgroundColor = '#ffcccc'; // light red
                 }
 
                 fieldGroup.appendChild(labelElement);
@@ -333,20 +310,6 @@
             console.error('Error adding new row:', error);
             alert('Failed to add new row. Please try again.');
         }
-    });
-
-    document.getElementById('searchBox').addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-        const rowFound = data.findIndex(row => row.some(value => value.toLowerCase().includes(query)));
-
-        if (rowFound >= 1) {
-            currentIndex = rowFound;
-            showRow(currentIndex);
-        } else {
-            alert('No matching record found.');
-        }
-
-        checkNavigationButtons();
     });
 
     fetchData();
