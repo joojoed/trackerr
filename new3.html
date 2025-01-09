@@ -32,10 +32,10 @@
             border-radius: 8px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 800px;
+            max-width: 1000px; /* Increased max-width for wider layout */
             padding: 20px;
             display: flex;
-            gap: 10px;
+            gap: 20px; /* Added gap between containers */
             box-sizing: border-box;
             justify-content: space-between;
         }
@@ -45,7 +45,7 @@
             border-radius: 8px;
             padding: 15px;
             flex: 1;
-            min-width: 45%;
+            min-width: calc(50% - 10px); /* Adjusted to be wider */
             box-sizing: border-box;
         }
 
