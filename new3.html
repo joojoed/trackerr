@@ -37,14 +37,20 @@
             box-sizing: border-box;
         }
 
+        .department-flex {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
         .department-container {
             background-color: #f1f3f7;
             border-radius: 8px;
             padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            flex: 1;
+            min-width: 190px;
+            box-sizing: border-box;
         }
 
         .department-title {
@@ -59,9 +65,8 @@
         }
 
         .field-group {
-            flex: 1 1 calc(50% - 10px);
             margin-bottom: 8px;
-            min-width: 150px;
+            width: 100%;
         }
 
         label {
@@ -88,6 +93,11 @@
         }
 
         /* Button Styles */
+        .button-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
         button {
             padding: 8px 20px;
             margin-top: 10px;
@@ -115,11 +125,6 @@
             box-shadow: none;
             transform: none;
         }
-
-        .button-container {
-            text-align: center;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
@@ -128,7 +133,7 @@
 
 <div class="data-container">
     <div id="rowNumber">Row #: </div>
-    <div id="dataDisplay">
+    <div id="dataDisplay" class="department-flex">
         <!-- Row data will be dynamically inserted here -->
     </div>
 
