@@ -223,11 +223,6 @@
                 inputElement.className = 'data-cell';
                 inputElement.id = `cell-${colIndex}`;
 
-                // Check if the value is "Declined" and apply red background color
-                if (displayValue.trim().toLowerCase() === 'declined') {
-                    inputElement.style.backgroundColor = '#ffcccc'; // light red
-                }
-
                 fieldGroup.appendChild(labelElement);
                 fieldGroup.appendChild(inputElement);
 
