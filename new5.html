@@ -223,6 +223,11 @@
                 inputElement.className = 'data-cell';
                 inputElement.id = `cell-${colIndex}`;
 
+                // Check if this is the 6th field (index 5) and if it is "declined"
+                if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
+                    inputElement.style.backgroundColor = "red";
+                }
+
                 fieldGroup.appendChild(labelElement);
                 fieldGroup.appendChild(inputElement);
 
