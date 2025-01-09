@@ -45,8 +45,10 @@
             border-radius: 8px;
             padding: 15px;
             flex: 1;
-            min-width: calc(50% - 10px); /* Adjusted to be wider */
+            min-width: calc(50% - 10px);
             box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
         }
 
         .department-title {
@@ -57,11 +59,13 @@
             border-bottom: 2px solid #e7e9ee;
             padding-bottom: 5px;
             text-transform: uppercase;
+            width: 100%;
         }
 
         .field-group {
             margin-bottom: 8px;
-            width: 100%;
+            width: calc(33.33% - 10px); /* Three fields per row */
+            margin-right: 10px; /* Spacer between fields */
         }
 
         label {
