@@ -25,24 +25,8 @@
             font-size: 1.5em;
             text-align: center;
         }
-        
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            max-width: 600px;
-            width: 100%;
-            justify-content: center;
-        }
 
-        input[type="text"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1em;
-            flex: 1;
-        }
-
+        /* Container Styles */
         .data-container {
             background-color: #ffffff;
             border-radius: 8px;
@@ -51,6 +35,20 @@
             max-width: 1200px;
             padding: 20px;
             box-sizing: border-box;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-box {
+            padding: 8px;
+            font-size: 1em;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
         }
 
         .department-flex {
@@ -105,6 +103,12 @@
             transition: all 0.3s ease;
         }
 
+        .data-cell.declined {
+            border-color: red;
+            color: red;
+            font-weight: bold;
+        }
+
         .data-cell:focus {
             border-color: #3498db;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
@@ -144,11 +148,6 @@
             box-shadow: none;
             transform: none;
         }
-
-        /* Highlight field with "declined" */
-        .declined-highlight {
-            background-color: #ffdddd;
-        }
     </style>
 </head>
 <body>
@@ -156,9 +155,7 @@
 <h1>Row Viewer and Editor</h1>
 
 <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search...">
-    <button id="searchButton">Search</button>
-    <button id="clearSearchButton">Clear</button>
+    <input type="text" id="searchBox" class="search-box" placeholder="Search...">
 </div>
 
 <div class="data-container">
@@ -198,13 +195,11 @@
     let data = [];
     let headers = [];
     let currentIndex = 1;
-    let filteredData = [];
 
     async function fetchData() {
         try {
             const response = await fetch(webAppUrl);
             data = await response.json();
-            filteredData = data.slice(1); // Exclude headers from filtering
             if (data.length > 1) {
                 headers = data[0];
                 document.getElementById('nextButton').disabled = false;
@@ -223,7 +218,7 @@
     }
 
     function showRow(index) {
-        if (index >= 1 && index < filteredData.length + 1) {
+        if (index >= 1 && index < data.length) {
             const recruitmentFields = document.getElementById('recruitment-fields');
             const hrFields = document.getElementById('hr-fields');
             const proFields = document.getElementById('pro-fields');
@@ -232,7 +227,7 @@
             hrFields.innerHTML = '';
             proFields.innerHTML = '';
 
-            filteredData[index - 1].forEach((value, colIndex) => {
+            data[index].forEach((value, colIndex) => {
                 let displayValue = value;
 
                 if (!isNaN(Date.parse(value))) {
@@ -252,8 +247,8 @@
                 inputElement.className = 'data-cell';
                 inputElement.id = `cell-${colIndex}`;
 
-                if (displayValue.toLowerCase() === "declined") {
-                    inputElement.classList.add('declined-highlight');
+                if (displayValue.toLowerCase() === 'declined') {
+                    inputElement.classList.add('declined');
                 }
 
                 fieldGroup.appendChild(labelElement);
@@ -274,7 +269,7 @@
 
     function checkNavigationButtons() {
         document.getElementById('prevButton').disabled = currentIndex <= 1;
-        document.getElementById('nextButton').disabled = currentIndex >= filteredData.length;
+        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
     }
 
     document.getElementById('prevButton').addEventListener('click', () => {
@@ -285,7 +280,7 @@
     });
 
     document.getElementById('nextButton').addEventListener('click', () => {
-        if (currentIndex < filteredData.length) {
+        if (currentIndex < data.length - 1) {
             currentIndex++;
             showRow(currentIndex);
         }
@@ -293,7 +288,7 @@
 
     document.getElementById('editButton').addEventListener('click', async () => {
         let newValues = [];
-        filteredData[currentIndex - 1].forEach((_, colIndex) => {
+        data[currentIndex].forEach((_, colIndex) => {
             const value = document.getElementById(`cell-${colIndex}`).value;
             newValues.push(value);
         });
@@ -305,7 +300,7 @@
                 mode: 'no-cors',
                 body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
             });
-            filteredData[currentIndex - 1] = newValues;
+            data[currentIndex] = newValues;
             alert('Row updated successfully.');
         } catch (error) {
             console.error('Error updating data:', error);
@@ -314,7 +309,7 @@
     });
 
     document.getElementById('newRowButton').addEventListener('click', async () => {
-        const newRow = new Array(headers.length).fill("");
+        let newRow = new Array(headers.length).fill("");
         headers.forEach((header, colIndex) => {
             const value = prompt(`Enter ${header}:`, "");
             if (value !== null) {
@@ -330,10 +325,9 @@
                 body: JSON.stringify({ action: 'new', values: newRow })
             });
             data.push(newRow);
-            filteredData.push(newRow);
             alert('New row added successfully.');
-            showRow(filteredData.length);
-            currentIndex = filteredData.length;
+            showRow(data.length - 1);
+            currentIndex = data.length - 1;
             checkNavigationButtons();
         } catch (error) {
             console.error('Error adding new row:', error);
@@ -341,25 +335,17 @@
         }
     });
 
-    document.getElementById('searchButton').addEventListener('click', () => {
-        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-        filteredData = data.slice(1).filter(row => // Exclude headers from filtering
-            row.some(value => value.toLowerCase().includes(searchQuery))
-        );
-        if (filteredData.length > 0) {
-            currentIndex = 1;
-            showRow(currentIndex);
-            checkNavigationButtons();
-        } else {
-            alert('No matching records found.');
-        }
-    });
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const rowFound = data.findIndex(row => row.some(value => value.toLowerCase().includes(query)));
 
-    document.getElementById('clearSearchButton').addEventListener('click', () => {
-        document.getElementById('searchInput').value = '';
-        filteredData = data.slice(1);
-        currentIndex = 1;
-        showRow(currentIndex);
+        if (rowFound >= 1) {
+            currentIndex = rowFound;
+            showRow(currentIndex);
+        } else {
+            alert('No matching record found.');
+        }
+
         checkNavigationButtons();
     });
 
