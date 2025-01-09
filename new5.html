@@ -35,7 +35,6 @@
             max-width: 1200px;
             padding: 20px;
             box-sizing: border-box;
-            position: relative; /* To position search bar absolutely */
         }
 
         .department-flex {
@@ -133,14 +132,12 @@
         /* Search Bar Styles */
         .search-container {
             position: absolute;
-            top: 20px; /* Positioning from the top of the container */
-            right: 20px; /* Positioning from the right of the container */
-            display: flex;
-            align-items: center;
+            top: 20px;
+            right: 20px;
         }
 
         .search-input {
-            width: 200px; /* Fixed width for consistent alignment */
+            width: 200px;
             padding: 8px;
             border: 1px solid #ced4da;
             border-radius: 4px;
@@ -149,7 +146,7 @@
 
         .search-button {
             margin-left: 5px;
-            height: 100%; /* Ensure alignment with the input */
+            height: 100%;
         }
     </style>
 </head>
@@ -157,12 +154,12 @@
 
 <h1>Row Viewer and Editor</h1>
 
-<div class="data-container">
-    <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search..." />
-        <button id="searchButton" class="search-button">Search</button>
-    </div>
+<div class="search-container">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search..." />
+    <button id="searchButton" class="search-button">Search</button>
+</div>
 
+<div class="data-container">
     <div class="department-flex">
         <div class="department-container">
             <div class="department-title">Recruitment</div>
