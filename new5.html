@@ -35,6 +35,7 @@
             max-width: 1200px;
             padding: 20px;
             box-sizing: border-box;
+            position: relative; /* To position search bar absolutely */
         }
 
         .department-flex {
@@ -131,17 +132,24 @@
 
         /* Search Bar Styles */
         .search-container {
-            margin-bottom: 20px;
-            text-align: center;
+            position: absolute;
+            top: 20px; /* Positioning from the top of the container */
+            right: 20px; /* Positioning from the right of the container */
+            display: flex;
+            align-items: center;
         }
 
         .search-input {
-            width: 80%;
-            max-width: 600px;
+            width: 200px; /* Fixed width for consistent alignment */
             padding: 8px;
             border: 1px solid #ced4da;
             border-radius: 4px;
             font-size: 1em;
+        }
+
+        .search-button {
+            margin-left: 5px;
+            height: 100%; /* Ensure alignment with the input */
         }
     </style>
 </head>
@@ -149,12 +157,12 @@
 
 <h1>Row Viewer and Editor</h1>
 
-<div class="search-container">
-    <input type="text" id="searchInput" class="search-input" placeholder="Search..." />
-    <button id="searchButton">Search</button>
-</div>
-
 <div class="data-container">
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search..." />
+        <button id="searchButton" class="search-button">Search</button>
+    </div>
+
     <div class="department-flex">
         <div class="department-container">
             <div class="department-title">Recruitment</div>
@@ -336,13 +344,13 @@
         const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
         if (searchQuery) {
             const resultIndex = data.findIndex((row, idx) => 
-                idx > 0 && row.some(cell => cell && String(cell).toLowerCase().includes(searchQuery))
+                idx > currentIndex && row.some(cell => cell && String(cell).toLowerCase().includes(searchQuery))
             );
             if (resultIndex !== -1) {
                 currentIndex = resultIndex;
                 showRow(currentIndex);
             } else {
-                alert('No matching records found.');
+                alert('No further matching records found.');
             }
         }
     });
