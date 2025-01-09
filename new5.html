@@ -336,7 +336,7 @@
         const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
         if (searchQuery) {
             const resultIndex = data.findIndex((row, idx) => 
-                idx > 0 && row.some(cell => cell && cell.toLowerCase().includes(searchQuery))
+                idx > 0 && row.some(cell => cell && String(cell).toLowerCase().includes(searchQuery))
             );
             if (resultIndex !== -1) {
                 currentIndex = resultIndex;
