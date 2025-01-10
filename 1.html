@@ -164,21 +164,41 @@
         <div class="department-container">
             <div class="department-title">Recruitment</div>
             <div class="fields-grid" id="recruitment-fields">
-                <!-- Recruitment Data Fields will be inserted here -->
+                <div class="field-group"><label for="cell-0">Field 1:</label><input type="text" id="cell-0" class="data-cell"></div>
+                <div class="field-group"><label for="cell-1">Field 2:</label><input type="text" id="cell-1" class="data-cell"></div>
+                <div class="field-group"><label for="cell-2">Field 3:</label><input type="text" id="cell-2" class="data-cell"></div>
+                <div class="field-group"><label for="cell-3">Field 4:</label><input type="text" id="cell-3" class="data-cell"></div>
+                <div class="field-group"><label for="cell-4">Field 5:</label><input type="text" id="cell-4" class="data-cell"></div>
             </div>
         </div>
 
         <div class="department-container">
             <div class="department-title">HR Department</div>
             <div class="fields-grid" id="hr-fields">
-                <!-- HR Data Fields will be inserted here -->
+                <div class="field-group"><label for="cell-5">Field 6:</label><input type="text" id="cell-5" class="data-cell"></div>
+                <div class="field-group"><label for="cell-6">Field 7:</label><input type="text" id="cell-6" class="data-cell"></div>
+                <div class="field-group"><label for="cell-7">Field 8:</label><input type="text" id="cell-7" class="data-cell"></div>
+                <div class="field-group"><label for="cell-8">Field 9:</label><input type="text" id="cell-8" class="data-cell"></div>
+                <div class="field-group"><label for="cell-9">Field 10:</label><input type="text" id="cell-9" class="data-cell"></div>
+                <div class="field-group"><label for="cell-10">Field 11:</label><input type="text" id="cell-10" class="data-cell"></div>
+                <div class="field-group"><label for="cell-11">Field 12:</label><input type="text" id="cell-11" class="data-cell"></div>
+                <div class="field-group"><label for="cell-12">Field 13:</label><input type="text" id="cell-12" class="data-cell"></div>
+                <div class="field-group"><label for="cell-13">Field 14:</label><input type="text" id="cell-13" class="data-cell"></div>
+                <div class="field-group"><label for="cell-14">Field 15:</label><input type="text" id="cell-14" class="data-cell"></div>
+                <div class="field-group"><label for="cell-15">Field 16:</label><input type="text" id="cell-15" class="data-cell"></div>
+                <div class="field-group"><label for="cell-16">Field 17:</label><input type="text" id="cell-16" class="data-cell"></div>
+                <div class="field-group"><label for="cell-17">Field 18:</label><input type="text" id="cell-17" class="data-cell"></div>
             </div>
         </div>
 
         <div class="department-container">
             <div class="department-title">PRO Department</div>
             <div class="fields-grid" id="pro-fields">
-                <!-- PRO Data Fields will be inserted here -->
+                <div class="field-group"><label for="cell-18">Field 19:</label><input type="text" id="cell-18" class="data-cell"></div>
+                <div class="field-group"><label for="cell-19">Field 20:</label><input type="text" id="cell-19" class="data-cell"></div>
+                <div class="field-group"><label for="cell-20">Field 21:</label><input type="text" id="cell-20" class="data-cell"></div>
+                <div class="field-group"><label for="cell-21">Field 22:</label><input type="text" id="cell-21" class="data-cell"></div>
+                <div class="field-group"><label for="cell-22">Field 23:</label><input type="text" id="cell-22" class="data-cell"></div>
             </div>
         </div>
     </div>
@@ -220,48 +240,14 @@
 
     function showRow(index) {
         if (index >= 1 && index < data.length) {
-            const recruitmentFields = document.getElementById('recruitment-fields');
-            const hrFields = document.getElementById('hr-fields');
-            const proFields = document.getElementById('pro-fields');
-
-            recruitmentFields.innerHTML = '';
-            hrFields.innerHTML = '';
-            proFields.innerHTML = '';
-
             data[index].forEach((value, colIndex) => {
-                let displayValue = value;
+                const inputElement = document.getElementById(`cell-${colIndex}`);
+                inputElement.value = isNaN(Date.parse(value)) ? value : formatDate(value);
 
-                if (!isNaN(Date.parse(value))) {
-                    displayValue = formatDate(value);
-                }
-
-                let fieldGroup = document.createElement('div');
-                fieldGroup.className = 'field-group';
-
-                let labelElement = document.createElement('label');
-                labelElement.htmlFor = `cell-${colIndex}`;
-                labelElement.textContent = headers[colIndex] + ':';
-
-                let inputElement = document.createElement('input');
-                inputElement.type = 'text';
-                inputElement.value = displayValue;
-                inputElement.className = 'data-cell';
-                inputElement.id = `cell-${colIndex}`;
-
-                // Check if this is the 6th field (index 5) and if it is "declined"
                 if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
                     inputElement.style.backgroundColor = "red";
-                }
-
-                fieldGroup.appendChild(labelElement);
-                fieldGroup.appendChild(inputElement);
-
-                if (colIndex >= 0 && colIndex <= 4) {
-                    recruitmentFields.appendChild(fieldGroup);
-                } else if (colIndex >= 5 && colIndex <= 17) {
-                    hrFields.appendChild(fieldGroup);
-                } else if (colIndex >= 18 && colIndex <= 22) {
-                    proFields.appendChild(fieldGroup);
+                } else {
+                    inputElement.style.backgroundColor = ""; // Reset color in case it was previously set
                 }
             });
 
