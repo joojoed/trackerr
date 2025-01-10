@@ -233,29 +233,24 @@
         }
     }
 
-    function formatDisplayDate(dateString) {
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    function formatDate(dateString) {
         const date = new Date(dateString);
-        return isNaN(date) ? dateString : date.toLocaleDateString('en-GB', options).replace(/ /g, '-');
-    }
-
-    function formatInputDate(dateString) {
-        const date = new Date(dateString);
-        return isNaN(date) ? '' : date.toISOString().split('T')[0];
+        return !isNaN(date)
+            ? new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
+            : dateString;
     }
 
     function showRow(index) {
         if (index >= 1 && index < data.length) {
             data[index].forEach((value, colIndex) => {
                 const inputElement = document.getElementById(`cell-${colIndex}`);
-
+                
                 if (inputElement.type === 'date') {
-                    inputElement.value = formatInputDate(value);
-                    inputElement.nextSibling.textContent = formatDisplayDate(value);
+                    inputElement.value = formatDate(value);
                 } else {
                     inputElement.value = value;
                 }
-
+                
                 if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
                     inputElement.style.backgroundColor = "red";
                 } else {
@@ -311,12 +306,9 @@
     document.getElementById('newRowButton').addEventListener('click', async () => {
         let newRow = new Array(headers.length).fill("");
         headers.forEach((header, colIndex) => {
-            let value;
-            if (colIndex === 5) {
-                value = prompt(`Enter ${header}:`, new Date().toISOString().split('T')[0]);
-            } else {
-                value = prompt(`Enter ${header}:`, "");
-            }
+            const value = (colIndex === 5)
+                ? prompt(`Enter ${header}:`, new Date().toISOString().split('T')[0])
+                : prompt(`Enter ${header}:`, "");
             if (value !== null) {
                 newRow[colIndex] = value;
             }
