@@ -88,7 +88,7 @@
             font-size: 0.9em;
             transition: all 0.3s ease;
             width: 100%;
-            box-sizing: border-box; /* Include padding and border in width calculation */
+            box-sizing: border-box;
         }
 
         .data-cell:focus {
@@ -194,7 +194,7 @@
         </div>
 
         <div class="department-container">
-            <div class="department-title">PRO Department</div>
+            <div class="department-title">Pro Department</div>
             <div class="fields-grid" id="pro-fields">
                 <div class="field-group"><label for="cell-18">Field 19:</label><input type="text" id="cell-18" class="data-cell"></div>
                 <div class="field-group"><label for="cell-19">Field 20:</label><input type="text" id="cell-19" class="data-cell"></div>
@@ -234,27 +234,27 @@
     }
 
     function formatDate(dateString) {
-    const date = new Date(dateString);
-    if (!isNaN(date)) {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = date.toLocaleString('en-us', { month: 'short' });
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
+        const date = new Date(dateString);
+        if (!isNaN(date)) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = date.toLocaleString('en-us', { month: 'short' });
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+        return dateString; // Return the original value if it's not a valid date
     }
-    return dateString; // Return the original value if it's not a valid date
-}
 
     function showRow(index) {
         if (index >= 1 && index < data.length) {
             data[index].forEach((value, colIndex) => {
                 const inputElement = document.getElementById(`cell-${colIndex}`);
-                
+
                 if (inputElement.type === 'date') {
                     inputElement.value = formatDate(value);
                 } else {
                     inputElement.value = value;
                 }
-                
+
                 if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
                     inputElement.style.backgroundColor = "red";
                 } else {
@@ -339,7 +339,7 @@
     document.getElementById('searchButton').addEventListener('click', () => {
         const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
         if (searchQuery) {
-            const resultIndex = data.findIndex((row, idx) => 
+            const resultIndex = data.findIndex((row, idx) =>
                 idx > currentIndex && row.some(cell => cell && String(cell).toLowerCase().includes(searchQuery))
             );
             if (resultIndex !== -1) {
