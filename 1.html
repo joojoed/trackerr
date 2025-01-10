@@ -177,7 +177,7 @@
         <div class="department-container">
             <div class="department-title">HR Department</div>
             <div class="fields-grid" id="hr-fields">
-                <div class="field-group"><label for="cell-5">Field 6:</label><input type="text" id="cell-5" class="data-cell"></div>
+                <div class="field-group"><label for="cell-5">Field 6:</label><input type="date" id="cell-5" class="data-cell"></div>
                 <div class="field-group"><label for="cell-6">Field 7:</label><input type="text" id="cell-6" class="data-cell"></div>
                 <div class="field-group"><label for="cell-7">Field 8:</label><input type="text" id="cell-7" class="data-cell"></div>
                 <div class="field-group"><label for="cell-8">Field 9:</label><input type="text" id="cell-8" class="data-cell"></div>
@@ -244,8 +244,13 @@
         if (index >= 1 && index < data.length) {
             data[index].forEach((value, colIndex) => {
                 const inputElement = document.getElementById(`cell-${colIndex}`);
-                inputElement.value = isNaN(Date.parse(value)) ? value : formatDate(value);
-
+                
+                if (inputElement.type === 'date') {
+                    inputElement.value = formatDate(value);
+                } else {
+                    inputElement.value = value;
+                }
+                
                 if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
                     inputElement.style.backgroundColor = "red";
                 } else {
@@ -301,7 +306,9 @@
     document.getElementById('newRowButton').addEventListener('click', async () => {
         let newRow = new Array(headers.length).fill("");
         headers.forEach((header, colIndex) => {
-            const value = prompt(`Enter ${header}:`, "");
+            const value = (colIndex === 5)
+                ? prompt(`Enter ${header}:`, new Date().toISOString().split('T')[0])
+                : prompt(`Enter ${header}:`, "");
             if (value !== null) {
                 newRow[colIndex] = value;
             }
