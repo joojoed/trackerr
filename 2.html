@@ -32,7 +32,7 @@
             border-radius: 8px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1600px;
+            max-width: 1600px; /* Increased maximum width */
             padding: 20px;
             box-sizing: border-box;
         }
@@ -65,7 +65,7 @@
 
         .fields-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr; /* Set grid to two columns */
             gap: 20px;
         }
 
@@ -88,7 +88,7 @@
             font-size: 0.9em;
             transition: all 0.3s ease;
             width: 100%;
-            box-sizing: border-box;
+            box-sizing: border-box; /* Include padding and border in width calculation */
         }
 
         .data-cell:focus {
@@ -177,9 +177,9 @@
         <div class="department-container">
             <div class="department-title">HR Department</div>
             <div class="fields-grid" id="hr-fields">
-                <div class="field-group"><label for="cell-5">Field 6:</label><input type="text" id="cell-5" class="data-cell"></div>
+                <div class="field-group"><label for="cell-5">Field 6:</label><input type="date" id="cell-5" class="data-cell"></div>
                 <div class="field-group"><label for="cell-6">Field 7:</label><input type="text" id="cell-6" class="data-cell"></div>
-                <div class="field-group"><label for="cell-7">Field 8:</label><input type="text" id="cell-7" class="data-cell"></div>
+                <div class="field-group"><label for="cell-7">Field 8:</label><input type="date" id="cell-7" class="data-cell"></div>
                 <div class="field-group"><label for="cell-8">Field 9:</label><input type="text" id="cell-8" class="data-cell"></div>
                 <div class="field-group"><label for="cell-9">Field 10:</label><input type="text" id="cell-9" class="data-cell"></div>
                 <div class="field-group"><label for="cell-10">Field 11:</label><input type="text" id="cell-10" class="data-cell"></div>
@@ -233,39 +233,33 @@
         }
     }
 
-    function isDate(value) {
-        const date = new Date(value);
-        return !isNaN(date) && value.includes('-') && date.getFullYear() > 1000;
-    }
-
-    function formatDisplayDate(dateString) {
-        const date = new Date(dateString);
-        if (isNaN(date)) {
-            return dateString;
-        }
-        
+    function formatDate(dateString) {
+    const date = new Date(dateString);
+    if (!isNaN(date)) {
         const day = String(date.getDate()).padStart(2, '0');
-        const month = date.toLocaleString('default', { month: 'short' });
+        const month = date.toLocaleString('en-us', { month: 'short' });
         const year = date.getFullYear();
         return `${day}-${month}-${year}`;
     }
-
-    function formatInputDate(displayDate) {
-        const [day, month, year] = displayDate.split('-');
-        if (!day || !month || !year) {
-            return displayDate;
-        }
-        
-        const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
-        const formattedDate = new Date(year, monthIndex, day);
-        return formattedDate.toISOString().split('T')[0];
-    }
+    return dateString; // Return the original value if it's not a valid date
+}
 
     function showRow(index) {
         if (index >= 1 && index < data.length) {
             data[index].forEach((value, colIndex) => {
                 const inputElement = document.getElementById(`cell-${colIndex}`);
-                inputElement.value = isDate(value) ? formatDisplayDate(value) : value;
+                
+                if (inputElement.type === 'date') {
+                    inputElement.value = formatDate(value);
+                } else {
+                    inputElement.value = value;
+                }
+                
+                if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
+                    inputElement.style.backgroundColor = "red";
+                } else {
+                    inputElement.style.backgroundColor = ""; // Reset color in case it was previously set
+                }
             });
 
             checkNavigationButtons();
@@ -294,8 +288,8 @@
     document.getElementById('editButton').addEventListener('click', async () => {
         let newValues = [];
         data[currentIndex].forEach((_, colIndex) => {
-            let value = document.getElementById(`cell-${colIndex}`).value;
-            newValues.push(isDate(value) ? formatInputDate(value) : value);
+            const value = document.getElementById(`cell-${colIndex}`).value;
+            newValues.push(value);
         });
 
         try {
@@ -316,10 +310,11 @@
     document.getElementById('newRowButton').addEventListener('click', async () => {
         let newRow = new Array(headers.length).fill("");
         headers.forEach((header, colIndex) => {
-            let promptValue = isDate(newRow[colIndex]) ? formatDisplayDate(new Date()) : "";
-            let value = prompt(`Enter ${header}:`, promptValue);
+            const value = (colIndex === 5)
+                ? prompt(`Enter ${header}:`, new Date().toISOString().split('T')[0])
+                : prompt(`Enter ${header}:`, "");
             if (value !== null) {
-                newRow[colIndex] = isDate(value) ? formatInputDate(value) : value;
+                newRow[colIndex] = value;
             }
         });
 
