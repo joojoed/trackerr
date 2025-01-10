@@ -31,8 +31,8 @@
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            width: 95%;
-            max-width: 1200px;
+            width: 100%;
+            max-width: 1600px; /* Increased maximum width */
             padding: 20px;
             box-sizing: border-box;
         }
@@ -65,8 +65,8 @@
 
         .fields-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Wider fields */
-            gap: 10px;
+            grid-template-columns: 1fr 1fr; /* Set grid to two columns */
+            gap: 20px;
         }
 
         .field-group {
@@ -87,7 +87,7 @@
             border-radius: 4px;
             font-size: 0.9em;
             transition: all 0.3s ease;
-            width: 100%; /* Make input fields wider */
+            width: 100%;
             box-sizing: border-box; /* Include padding and border in width calculation */
         }
 
