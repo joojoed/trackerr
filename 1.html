@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Row Viewer and Editor</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            padding: 10px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #2a2a2a;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        /* Container Styles */
+        .data-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .department-flex {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .department-container {
+            background-color: #f1f3f7;
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            box-sizing: border-box;
+            min-width: 280px;
+        }
+
+        .department-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #34495e;
+            font-size: 1em;
+            border-bottom: 2px solid #e7e9ee;
+            padding-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .fields-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .data-cell {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .data-cell:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        /* Button Styles */
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        }
+
+        button:disabled {
+            background-color: #bbbbbb;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .search-input {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .search-button {
+            margin-left: 5px;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Row Viewer and Editor</h1>
+
+<div class="search-container">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search..." />
+    <button id="searchButton" class="search-button">Search</button>
+</div>
+
+<div class="data-container">
+    <div class="department-flex">
+        <div class="department-container">
+            <div class="department-title">Recruitment</div>
+            <div class="fields-grid" id="recruitment-fields">
+                <!-- Recruitment Data Fields will be inserted here -->
+            </div>
+        </div>
+
+        <div class="department-container">
+            <div class="department-title">HR Department</div>
+            <div class="fields-grid" id="hr-fields">
+                <!-- HR Data Fields will be inserted here -->
+            </div>
+        </div>
+
+        <div class="department-container">
+            <div class="department-title">PRO Department</div>
+            <div class="fields-grid" id="pro-fields">
+                <!-- PRO Data Fields will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button id="prevButton" disabled>Previous</button>
+        <button id="nextButton" disabled>Next</button>
+        <button id="editButton">Edit</button>
+        <button id="newRowButton">Add New Row</button>
+    </div>
+</div>
+
+<script>
+    const webAppUrl = 'https://script.google.com/macros/s/AKfycbxS2hu32-wXrzi8kTHHZpVViKZG2fvOsERrqJbeYJ_YjYMRiimIBTEls7gnyITVDPmt/exec';
+    let data = [];
+    let headers = [];
+    let currentIndex = 1;
+
+    async function fetchData() {
+        try {
+            const response = await fetch(webAppUrl);
+            data = await response.json();
+            if (data.length > 1) {
+                headers = data[0];
+                document.getElementById('nextButton').disabled = false;
+                showRow(currentIndex);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return !isNaN(date)
+            ? new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
+            : dateString;
+    }
+
+    function showRow(index) {
+        if (index >= 1 && index < data.length) {
+            const recruitmentFields = document.getElementById('recruitment-fields');
+            const hrFields = document.getElementById('hr-fields');
+            const proFields = document.getElementById('pro-fields');
+
+            recruitmentFields.innerHTML = '';
+            hrFields.innerHTML = '';
+            proFields.innerHTML = '';
+
+            data[index].forEach((value, colIndex) => {
+                let displayValue = value;
+
+                if (!isNaN(Date.parse(value))) {
+                    displayValue = formatDate(value);
+                }
+
+                let fieldGroup = document.createElement('div');
+                fieldGroup.className = 'field-group';
+
+                let labelElement = document.createElement('label');
+                labelElement.htmlFor = `cell-${colIndex}`;
+                labelElement.textContent = headers[colIndex] + ':';
+
+                let inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.value = displayValue;
+                inputElement.className = 'data-cell';
+                inputElement.id = `cell-${colIndex}`;
+
+                // Check if this is the 6th field (index 5) and if it is "declined"
+                if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
+                    inputElement.style.backgroundColor = "red";
+                }
+
+                fieldGroup.appendChild(labelElement);
+                fieldGroup.appendChild(inputElement);
+
+                if (colIndex >= 0 && colIndex <= 4) {
+                    recruitmentFields.appendChild(fieldGroup);
+                } else if (colIndex >= 5 && colIndex <= 17) {
+                    hrFields.appendChild(fieldGroup);
+                } else if (colIndex >= 18 && colIndex <= 22) {
+                    proFields.appendChild(fieldGroup);
+                }
+            });
+
+            checkNavigationButtons();
+        }
+    }
+
+    function checkNavigationButtons() {
+        document.getElementById('prevButton').disabled = currentIndex <= 1;
+        document.getElementById('nextButton').disabled = currentIndex >= data.length - 1;
+    }
+
+    document.getElementById('prevButton').addEventListener('click', () => {
+        if (currentIndex > 1) {
+            currentIndex--;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+        if (currentIndex < data.length - 1) {
+            currentIndex++;
+            showRow(currentIndex);
+        }
+    });
+
+    document.getElementById('editButton').addEventListener('click', async () => {
+        let newValues = [];
+        data[currentIndex].forEach((_, colIndex) => {
+            const value = document.getElementById(`cell-${colIndex}`).value;
+            newValues.push(value);
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'edit', row: currentIndex + 1, values: newValues })
+            });
+            data[currentIndex] = newValues;
+            alert('Row updated successfully.');
+        } catch (error) {
+            console.error('Error updating data:', error);
+            alert('Failed to update row. Please try again.');
+        }
+    });
+
+    document.getElementById('newRowButton').addEventListener('click', async () => {
+        let newRow = new Array(headers.length).fill("");
+        headers.forEach((header, colIndex) => {
+            const value = prompt(`Enter ${header}:`, "");
+            if (value !== null) {
+                newRow[colIndex] = value;
+            }
+        });
+
+        try {
+            await fetch(webAppUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
+                body: JSON.stringify({ action: 'new', values: newRow })
+            });
+            data.push(newRow);
+            alert('New row added successfully.');
+            showRow(data.length - 1);
+            currentIndex = data.length - 1;
+            checkNavigationButtons();
+        } catch (error) {
+            console.error('Error adding new row:', error);
+            alert('Failed to add new row. Please try again.');
+        }
+    });
+
+    document.getElementById('searchButton').addEventListener('click', () => {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+        if (searchQuery) {
+            const resultIndex = data.findIndex((row, idx) => 
+                idx > currentIndex && row.some(cell => cell && String(cell).toLowerCase().includes(searchQuery))
+            );
+            if (resultIndex !== -1) {
+                currentIndex = resultIndex;
+                showRow(currentIndex);
+            } else {
+                alert('No further matching records found.');
+            }
+        }
+    });
+
+    fetchData();
+</script>
+
+</body>
+</html>
