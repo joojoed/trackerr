@@ -184,7 +184,14 @@
                 <div class="field-group"><label for="cell-9">Field 10:</label><input type="text" id="cell-9" class="data-cell"></div>
                 <div class="field-group"><label for="cell-10">Field 11:</label><input type="text" id="cell-10" class="data-cell"></div>
                 <div class="field-group"><label for="cell-11">Field 12:</label><input type="text" id="cell-11" class="data-cell"></div>
-                <div class="field-group"><label for="cell-12">Field 13:</label><input type="text" id="cell-12" class="data-cell"></div>
+                <div class="field-group"><label for="cell-12">Field 13:</label>
+                    <select id="cell-12" class="data-cell">
+                        <option value="">Select an option</option>
+                        <option value="Option 1">Option 1</option>
+                        <option value="Option 2">Option 2</option>
+                        <option value="Option 3">Option 3</option>
+                    </select>
+                </div>
                 <div class="field-group"><label for="cell-13">Field 14:</label><input type="text" id="cell-13" class="data-cell"></div>
                 <div class="field-group"><label for="cell-14">Field 15:</label><input type="text" id="cell-14" class="data-cell"></div>
                 <div class="field-group"><label for="cell-15">Field 16:</label><input type="text" id="cell-15" class="data-cell"></div>
@@ -248,13 +255,15 @@
         if (index >= 1 && index < data.length) {
             data[index].forEach((value, colIndex) => {
                 const inputElement = document.getElementById(`cell-${colIndex}`);
-
+                
                 if (inputElement.type === 'date') {
                     inputElement.value = formatDate(value);
+                } else if (inputElement.tagName.toLowerCase() === 'select') {
+                    inputElement.value = value;
                 } else {
                     inputElement.value = value;
                 }
-
+                
                 if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
                     inputElement.style.backgroundColor = "red";
                 } else {
@@ -288,7 +297,8 @@
     document.getElementById('editButton').addEventListener('click', async () => {
         let newValues = [];
         data[currentIndex].forEach((_, colIndex) => {
-            const value = document.getElementById(`cell-${colIndex}`).value;
+            const inputElement = document.getElementById(`cell-${colIndex}`);
+            const value = inputElement.tagName.toLowerCase() === 'select' ? inputElement.value : inputElement.value;
             newValues.push(value);
         });
 
@@ -310,9 +320,15 @@
     document.getElementById('newRowButton').addEventListener('click', async () => {
         let newRow = new Array(headers.length).fill("");
         headers.forEach((header, colIndex) => {
-            const value = (colIndex === 5)
-                ? prompt(`Enter ${header}:`, new Date().toISOString().split('T')[0])
-                : prompt(`Enter ${header}:`, "");
+            const inputElement = document.getElementById(`cell-${colIndex}`);
+            let value;
+            if (inputElement.type === 'date') {
+                value = prompt(`Enter ${header}:`, new Date().toISOString().split('T')[0]);
+            } else if (inputElement.tagName.toLowerCase() === 'select') {
+                value = prompt(`Enter ${header} [Options: Option 1, Option 2, Option 3]:`, "");
+            } else {
+                value = prompt(`Enter ${header}:`, "");
+            }
             if (value !== null) {
                 newRow[colIndex] = value;
             }
@@ -339,7 +355,7 @@
     document.getElementById('searchButton').addEventListener('click', () => {
         const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
         if (searchQuery) {
-            const resultIndex = data.findIndex((row, idx) =>
+            const resultIndex = data.findIndex((row, idx) => 
                 idx > currentIndex && row.some(cell => cell && String(cell).toLowerCase().includes(searchQuery))
             );
             if (resultIndex !== -1) {
