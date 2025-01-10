@@ -32,7 +32,7 @@
             border-radius: 8px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 1600px; /* Increased maximum width */
+            max-width: 1600px;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -65,7 +65,7 @@
 
         .fields-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Set grid to two columns */
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
@@ -88,7 +88,7 @@
             font-size: 0.9em;
             transition: all 0.3s ease;
             width: 100%;
-            box-sizing: border-box; /* Include padding and border in width calculation */
+            box-sizing: border-box;
         }
 
         .data-cell:focus {
@@ -178,7 +178,7 @@
             <div class="department-title">HR Department</div>
             <div class="fields-grid" id="hr-fields">
                 <div class="field-group"><label for="cell-5">Field 6:</label><input type="text" id="cell-5" class="data-cell"></div>
-                <div class="field-group"><label for="cell-6">Field 7:</label><input type="date" id="cell-6" class="data-cell"></div>
+                <div class="field-group"><label for="cell-6">Field 7:</label><input type="text" id="cell-6" class="data-cell"></div>
                 <div class="field-group"><label for="cell-7">Field 8:</label><input type="text" id="cell-7" class="data-cell"></div>
                 <div class="field-group"><label for="cell-8">Field 9:</label><input type="text" id="cell-8" class="data-cell"></div>
                 <div class="field-group"><label for="cell-9">Field 10:</label><input type="text" id="cell-9" class="data-cell"></div>
@@ -233,6 +233,11 @@
         }
     }
 
+    function isDate(value) {
+        const date = new Date(value);
+        return !isNaN(date) && value.includes('-') && date.getFullYear() > 1000;
+    }
+
     function formatDisplayDate(dateString) {
         const date = new Date(dateString);
         if (isNaN(date)) {
@@ -248,29 +253,19 @@
     function formatInputDate(displayDate) {
         const [day, month, year] = displayDate.split('-');
         if (!day || !month || !year) {
-            return '';
+            return displayDate;
         }
         
         const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
-        return new Date(year, monthIndex, day).toISOString().split('T')[0];
+        const formattedDate = new Date(year, monthIndex, day);
+        return formattedDate.toISOString().split('T')[0];
     }
 
     function showRow(index) {
         if (index >= 1 && index < data.length) {
             data[index].forEach((value, colIndex) => {
-                const inputElement = document.getElementById(`cell-${colIndex}`);  
-
-                if (colIndex === 5) {
-                    inputElement.value = formatDisplayDate(value);
-                } else {
-                    inputElement.value = value;
-                }
-                
-                if (colIndex === 5 && value.trim().toLowerCase() === "declined") {
-                    inputElement.style.backgroundColor = "red";
-                } else {
-                    inputElement.style.backgroundColor = ""; // Reset color in case it was previously set
-                }
+                const inputElement = document.getElementById(`cell-${colIndex}`);
+                inputElement.value = isDate(value) ? formatDisplayDate(value) : value;
             });
 
             checkNavigationButtons();
@@ -300,10 +295,7 @@
         let newValues = [];
         data[currentIndex].forEach((_, colIndex) => {
             let value = document.getElementById(`cell-${colIndex}`).value;
-            if (colIndex === 5) {
-                value = formatInputDate(value);
-            }
-            newValues.push(value);
+            newValues.push(isDate(value) ? formatInputDate(value) : value);
         });
 
         try {
@@ -324,14 +316,10 @@
     document.getElementById('newRowButton').addEventListener('click', async () => {
         let newRow = new Array(headers.length).fill("");
         headers.forEach((header, colIndex) => {
-            let value;
-            if (colIndex === 5) {
-                value = prompt(`Enter ${header}:`, formatDisplayDate(new Date().toISOString().split('T')[0]));
-            } else {
-                value = prompt(`Enter ${header}:`, "");
-            }
+            let promptValue = isDate(newRow[colIndex]) ? formatDisplayDate(new Date()) : "";
+            let value = prompt(`Enter ${header}:`, promptValue);
             if (value !== null) {
-                newRow[colIndex] = colIndex === 5 ? formatInputDate(value) : value;
+                newRow[colIndex] = isDate(value) ? formatInputDate(value) : value;
             }
         });
 
