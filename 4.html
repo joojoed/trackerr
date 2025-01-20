@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details Form</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            padding: 20px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #2a2a2a;
+            text-align: center;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .section-title {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #34495e;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e7e9ee;
+        }
+
+        .form-field {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Employee Details Form</h1>
+<div class="form-container">
+    <form id="employeeForm">
+        <!-- Personal Information Section -->
+        <div class="section-title">Personal Information</div>
+        <div class="form-field">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+        </div>
+        <div class="form-field">
+            <label for="dob">Age & DOB:</label>
+            <input type="date" id="dob" required>
+        </div>
+        <div class="form-field">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" required>
+        </div>
+        <div class="form-field">
+            <label for="contact">Contact Details:</label>
+            <input type="tel" id="contact" required>
+        </div>
+        
+        <!-- Employment Details Section -->
+        <div class="section-title">Employment Details</div>
+        <div class="form-field">
+            <label for="position">Position:</label>
+            <input type="text" id="position" required>
+        </div>
+        <div class="form-field">
+            <label for="department">Department:</label>
+            <input type="text" id="department" required>
+        </div>
+        <div class="form-field">
+            <label for="monthlySalary">Monthly Package Salary:</label>
+            <input type="number" id="monthlySalary" required>
+        </div>
+        <div class="form-field">
+            <label for="date">Interview Date:</label>
+            <input type="date" id="interviewDate" required>
+        </div>
+
+        <!-- Skills and Competencies Section -->
+        <div class="section-title">Skills and Competencies</div>
+        <div class="form-field">
+            <label for="languages">Languages:</label>
+            <input type="text" id="languages" required>
+        </div>
+        <div class="form-field">
+            <label for="skills">Technical Knowledge:</label>
+            <input type="text" id="skills" required>
+        </div>
+        
+        <!-- Performance Section -->
+        <div class="section-title">Performance Evaluation</div>
+        <div class="form-field">
+            <label for="leadership">Leadership Skills:</label>
+            <input type="text" id="leadership" required>
+        </div>
+        <div class="form-field">
+            <label for="communication">Communication Skills:</label>
+            <input type="text" id="communication" required>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('employeeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Handle form submission logic here, such as validation and saving the data
+        alert('Form submitted successfully!');
+    });
+</script>
+
+</body>
+</html>
