@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Candidate Information Form</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <h1>Candidate Information Form</h1>
-    <form>
+    <form id="candidateForm">
+        <!-- Basic Information -->
         <fieldset>
             <legend>Basic Information</legend>
             <label for="sn">SN#:</label>
@@ -36,7 +38,7 @@
 
             <label for="dependents">No. of Dependents:</label>
             <input type="number" id="dependents" name="dependents"><br><br>
-            
+
             <label for="salary">Monthly Package Salary:</label>
             <input type="number" id="salary" name="salary"><br><br>
 
@@ -45,98 +47,12 @@
 
             <label for="leave_entitlement">Leave Entitlement:</label>
             <input type="text" id="leave_entitlement" name="leave_entitlement"><br><br>
-            
+
             <label for="interview_date">Interview Date:</label>
             <input type="date" id="interview_date" name="interview_date"><br><br>
         </fieldset>
 
-        <fieldset>
-            <legend>Additional Information</legend>
-            <label for="languages">Languages:</label>
-            <input type="text" id="languages" name="languages"><br><br>
-
-            <label for="department">Department:</label>
-            <input type="text" id="department" name="department"><br><br>
-
-            <label for="education">Education:</label><br>
-            <textarea id="education" name="education" rows="4" cols="50"></textarea><br><br>
-
-            <label for="qualification">Qualification:</label><br>
-            <textarea id="qualification" name="qualification" rows="4" cols="50"></textarea><br><br>
-
-            <label for="gender">Gender:</label>
-            <input type="text" id="gender" name="gender"><br><br>
-
-            <label for="notice_period">Notice Period/Availability:</label>
-            <input type="text" id="notice_period" name="notice_period"><br><br>
-
-            <label for="experience">Total Years of Experience:</label>
-            <input type="number" id="experience" name="experience"><br><br>
-
-            <label for="work_place">Place of Work:</label>
-            <input type="text" id="work_place" name="work_place"><br><br>
-
-            <label for="reporting_to">Reporting to (Job Title):</label>
-            <input type="text" id="reporting_to" name="reporting_to"><br><br>
-
-            <label for="accommodation">Accommodation:</label>
-            <input type="text" id="accommodation" name="accommodation"><br><br>
-
-            <label for="other_benefits">Other Benefits (*If any):</label>
-            <input type="text" id="other_benefits" name="other_benefits"><br><br>
-
-            <label for="functional_knowledge">Functional Knowledge:</label>
-            <input type="text" id="functional_knowledge" name="functional_knowledge"><br><br>
-
-            <label for="professional_developments">Professional developments:</label>
-            <input type="text" id="professional_developments" name="professional_developments"><br><br>
-
-            <label for="technical_knowledge">Technical Knowledge:</label>
-            <input type="text" id="technical_knowledge" name="technical_knowledge"><br><br>
-
-            <label for="leadership_skills">Leadership skills:</label>
-            <input type="text" id="leadership_skills" name="leadership_skills"><br><br>
-
-            <label for="accountability">Accountability:</label>
-            <input type="text" id="accountability" name="accountability"><br><br>
-
-            <label for="communication_skills">Communication/Language skills:</label>
-            <input type="text" id="communication_skills" name="communication_skills"><br><br>
-
-            <label for="ideas">Express Ideas and clear response:</label>
-            <input type="text" id="ideas" name="ideas"><br><br>
-
-            <label for="teamwork">Teamwork & Empowerment:</label>
-            <input type="text" id="teamwork" name="teamwork"><br><br>
-
-            <label for="passion">Passion:</label>
-            <input type="text" id="passion" name="passion"><br><br>
-
-            <label for="achievements">Achievements:</label>
-            <input type="text" id="achievements" name="achievements"><br><br>
-
-            <label for="adaptability">Adaptability:</label>
-            <input type="text" id="adaptability" name="adaptability"><br><br>
-
-            <label for="confidence">Confidence & Assertiveness:</label>
-            <input type="text" id="confidence" name="confidence"><br><br>
-
-            <label for="personal_development">Personal Development:</label>
-            <input type="text" id="personal_development" name="personal_development"><br><br>
-
-            <label for="problem_solving">Problem solving & Decision making:</label>
-            <input type="text" id="problem_solving" name="problem_solving"><br><br>
-
-            <label for="overall_rating">Overall Rating:</label>
-            <input type="text" id="overall_rating" name="overall_rating"><br><br>
-
-            <label for="interview_outcome">Interview Outcome:</label>
-            <input type="text" id="interview_outcome" name="interview_outcome"><br><br>
-
-            <label for="overall_evaluation">Overall Evaluation:</label>
-            <input type="text" id="overall_evaluation" name="overall_evaluation"><br><br>
-        </fieldset>
-
+        <!-- Review Details -->
         <fieldset>
             <legend>Review Details</legend>
             <label for="reviewer_name">Name:</label>
@@ -149,7 +65,31 @@
             <input type="text" id="reviewer_signature" name="reviewer_signature"><br><br>
         </fieldset>
 
-        <button type="submit">Submit</button>
+        <button type="button" onclick="generatePDF()">Submit</button>
     </form>
+
+    <script>
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Gather form data
+            const formData = new FormData(document.getElementById('candidateForm'));
+            const data = Object.fromEntries(formData);
+
+            // Add basic information to PDF
+            doc.setFontSize(12);
+            doc.text('Candidate Information Form', 20, 20);
+
+            let yPosition = 30;
+            for (const [key, value] of Object.entries(data)) {
+                doc.text(`${key}: ${value}`, 20, yPosition);
+                yPosition += 10;
+            }
+
+            // Save the PDF
+            doc.save('CandidateInformation.pdf');
+        }
+    </script>
 </body>
 </html>
