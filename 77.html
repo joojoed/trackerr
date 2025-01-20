@@ -34,16 +34,13 @@
             margin-bottom: 10px;
             color: #333;
         }
-        .form-row {
-            display: flex;
-            justify-content: space-between;
-        }
-        .form-row label,
-        .form-row input {
-            display: block;
-            width: 48%;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
         label {
+            display: block;
             margin-bottom: 5px;
             color: #555;
         }
@@ -52,13 +49,13 @@
         input[type="tel"],
         input[type="date"],
         input[type="number"] {
+            width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
-            width: calc(100% - 10px);
-            font-size: 0.9em;
             margin-bottom: 15px;
+            font-size: 0.9em;
         }
         button {
             background-color: #28a745;
@@ -78,167 +75,150 @@
     <form id="candidateForm">
         <fieldset>
             <legend>Basic Information</legend>
-            <div class="form-row">
-                <label for="sn">SN#:</label>
-                <input type="text" id="sn" name="SN#">
+            <div class="form-grid">
+                <div>
+                    <label for="sn">SN#:</label>
+                    <input type="text" id="sn" name="SN#">
 
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="Name">
-            </div>
+                    <label for="position">Position:</label>
+                    <input type="text" id="position" name="Position">
 
-            <div class="form-row">
-                <label for="position">Position:</label>
-                <input type="text" id="position" name="Position">
+                    <label for="age_dob">Age & DOB:</label>
+                    <input type="text" id="age_dob" name="Age & DOB">
 
-                <label for="nationality">Nationality:</label>
-                <input type="text" id="nationality" name="Nationality">
-            </div>
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="Email Address">
 
-            <div class="form-row">
-                <label for="age_dob">Age & DOB:</label>
-                <input type="text" id="age_dob" name="Age & DOB">
+                    <label for="dependents">No. of Dependents:</label>
+                    <input type="number" id="dependents" name="No. of Dependents">
 
-                <label for="contact">Contact Details:</label>
-                <input type="text" id="contact" name="Contact Details">
-            </div>
+                    <label for="transportation">Transportation:</label>
+                    <input type="text" id="transportation" name="Transportation">
 
-            <div class="form-row">
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="Email Address">
+                    <label for="interview_date">Interview Date:</label>
+                    <input type="date" id="interview_date" name="Interview Date">
 
-                <label for="marital_status">Marital Status:</label>
-                <input type="text" id="marital_status" name="Marital Status">
-            </div>
+                    <label for="department">Department:</label>
+                    <input type="text" id="department" name="Department">
 
-            <div class="form-row">
-                <label for="dependents">No. of Dependents:</label>
-                <input type="number" id="dependents" name="No. of Dependents">
+                    <label for="gender">Gender:</label>
+                    <input type="text" id="gender" name="Gender">
+
+                    <label for="experience">Total Years of Experience:</label>
+                    <input type="number" id="experience" name="Total Years of Experience">
+
+                    <label for="accommodation">Accommodation:</label>
+                    <input type="text" id="accommodation" name="Accommodation">
+                </div>
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="Name">
+
+                    <label for="nationality">Nationality:</label>
+                    <input type="text" id="nationality" name="Nationality">
+
+                    <label for="contact">Contact Details:</label>
+                    <input type="text" id="contact" name="Contact Details">
+
+                    <label for="marital_status">Marital Status:</label>
+                    <input type="text" id="marital_status" name="Marital Status">
                 
-                <label for="salary">Monthly Package Salary:</label>
-                <input type="number" id="salary" name="Monthly Package Salary">
-            </div>
+                    <label for="salary">Monthly Package Salary:</label>
+                    <input type="number" id="salary" name="Monthly Package Salary">
 
-            <div class="form-row">
-                <label for="transportation">Transportation:</label>
-                <input type="text" id="transportation" name="Transportation">
+                    <label for="leave_entitlement">Leave Entitlement:</label>
+                    <input type="text" id="leave_entitlement" name="Leave Entitlement">
+                
+                    <label for="languages">Languages:</label>
+                    <input type="text" id="languages" name="Languages">
 
-                <label for="leave_entitlement">Leave Entitlement:</label>
-                <input type="text" id="leave_entitlement" name="Leave Entitlement">
-            </div>
+                    <label for="education">Education:</label>
+                    <input type="text" id="education" name="Education">
 
-            <div class="form-row">
-                <label for="interview_date">Interview Date:</label>
-                <input type="date" id="interview_date" name="Interview Date">
+                    <label for="notice_period">Notice Period/Availability:</label>
+                    <input type="text" id="notice_period" name="Notice Period/Availability">
 
-                <label for="languages">Languages:</label>
-                <input type="text" id="languages" name="Languages">
-            </div>
+                    <label for="work_place">Place of Work:</label>
+                    <input type="text" id="work_place" name="Place of Work">
 
-            <div class="form-row">
-                <label for="department">Department:</label>
-                <input type="text" id="department" name="Department">
-
-                <label for="education">Education:</label>
-                <input type="text" id="education" name="Education">
-            </div>
-
-            <div class="form-row">
-                <label for="qualification">Qualification:</label>
-                <input type="text" id="qualification" name="Qualification">
-
-                <label for="gender">Gender:</label>
-                <input type="text" id="gender" name="Gender">
-            </div>
-
-            <div class="form-row">
-                <label for="notice_period">Notice Period/Availability:</label>
-                <input type="text" id="notice_period" name="Notice Period/Availability">
-
-                <label for="experience">Total Years of Experience:</label>
-                <input type="number" id="experience" name="Total Years of Experience">
-            </div>
-
-            <div class="form-row">
-                <label for="work_place">Place of Work:</label>
-                <input type="text" id="work_place" name="Place of Work">
-
-                <label for="reporting_to">Reporting to (Job Title):</label>
-                <input type="text" id="reporting_to" name="Reporting to (Job Title)">
-            </div>
-
-            <div class="form-row">
-                <label for="accommodation">Accommodation:</label>
-                <input type="text" id="accommodation" name="Accommodation">
-
-                <label for="other_benefits">Other Benefits:</label>
-                <input type="text" id="other_benefits" name="Other Benefits (*If any)">
+                    <label for="other_benefits">Other Benefits:</label>
+                    <input type="text" id="other_benefits" name="Other Benefits (*If any)">
+                </div>
             </div>
         </fieldset>
 
         <fieldset>
             <legend>Additional Information</legend>
-            <label for="functional_knowledge">Functional Knowledge:</label>
-            <input type="text" id="functional_knowledge" name="Functional Knowledge">
+            <div>
+                <label for="functional_knowledge">Functional Knowledge:</label>
+                <input type="text" id="functional_knowledge" name="Functional Knowledge">
 
-            <label for="professional_developments">Professional Developments:</label>
-            <input type="text" id="professional_developments" name="Professional developments">
+                <label for="professional_developments">Professional Developments:</label>
+                <input type="text" id="professional_developments" name="Professional developments">
 
-            <label for="technical_knowledge">Technical Knowledge:</label>
-            <input type="text" id="technical_knowledge" name="Technical Knowledge">
+                <label for="technical_knowledge">Technical Knowledge:</label>
+                <input type="text" id="technical_knowledge" name="Technical Knowledge">
 
-            <label for="leadership_skills">Leadership Skills:</label>
-            <input type="text" id="leadership_skills" name="Leadership skills">
+                <label for="leadership_skills">Leadership Skills:</label>
+                <input type="text" id="leadership_skills" name="Leadership skills">
 
-            <label for="accountability">Accountability:</label>
-            <input type="text" id="accountability" name="Accountability">
+                <label for="accountability">Accountability:</label>
+                <input type="text" id="accountability" name="Accountability">
 
-            <label for="communication_skills">Communication/Language Skills:</label>
-            <input type="text" id="communication_skills" name="Communication/Language skills">
+                <label for="communication_skills">Communication/Language Skills:</label>
+                <input type="text" id="communication_skills" name="Communication/Language skills">
 
-            <label for="ideas">Express Ideas and Clear Response:</label>
-            <input type="text" id="ideas" name="Express Ideas and clear response">
+                <label for="ideas">Express Ideas and Clear Response:</label>
+                <input type="text" id="ideas" name="Express Ideas and clear response">
 
-            <label for="teamwork">Teamwork & Empowerment:</label>
-            <input type="text" id="teamwork" name="Teamwork & Empowerment">
+                <label for="teamwork">Teamwork & Empowerment:</label>
+                <input type="text" id="teamwork" name="Teamwork & Empowerment">
 
-            <label for="passion">Passion:</label>
-            <input type="text" id="passion" name="Passion">
+                <label for="passion">Passion:</label>
+                <input type="text" id="passion" name="Passion">
 
-            <label for="achievements">Achievements:</label>
-            <input type="text" id="achievements" name="Achievements">
+                <label for="achievements">Achievements:</label>
+                <input type="text" id="achievements" name="Achievements">
 
-            <label for="adaptability">Adaptability:</label>
-            <input type="text" id="adaptability" name="Adaptability">
+                <label for="adaptability">Adaptability:</label>
+                <input type="text" id="adaptability" name="Adaptability">
 
-            <label for="confidence">Confidence & Assertiveness:</label>
-            <input type="text" id="confidence" name="Confidence & Assertiveness">
+                <label for="confidence">Confidence & Assertiveness:</label>
+                <input type="text" id="confidence" name="Confidence & Assertiveness">
 
-            <label for="personal_development">Personal Development:</label>
-            <input type="text" id="personal_development" name="Personal Development">
+                <label for="personal_development">Personal Development:</label>
+                <input type="text" id="personal_development" name="Personal Development">
 
-            <label for="problem_solving">Problem Solving & Decision Making:</label>
-            <input type="text" id="problem_solving" name="Problem solving & Decision making">
+                <label for="problem_solving">Problem Solving & Decision Making:</label>
+                <input type="text" id="problem_solving" name="Problem solving & Decision making">
 
-            <label for="overall_rating">Overall Rating:</label>
-            <input type="text" id="overall_rating" name="Overall Rating">
+                <label for="overall_rating">Overall Rating:</label>
+                <input type="text" id="overall_rating" name="Overall Rating">
 
-            <label for="interview_outcome">Interview Outcome:</label>
-            <input type="text" id="interview_outcome" name="interview Outcome">
+                <label for="interview_outcome">Interview Outcome:</label>
+                <input type="text" id="interview_outcome" name="interview Outcome">
 
-            <label for="overall_evaluation">Overall Evaluation:</label>
-            <input type="text" id="overall_evaluation" name="Overall Evaluation">
+                <label for="overall_evaluation">Overall Evaluation:</label>
+                <input type="text" id="overall_evaluation" name="Overall Evaluation">
+            </div>
         </fieldset>
 
         <fieldset>
             <legend>Review Details</legend>
-            <label for="reviewer_name">Name:</label>
-            <input type="text" id="reviewer_name" name="Name">
-
-            <label for="reviewer_position">Position:</label>
-            <input type="text" id="reviewer_position" name="Position">
-
-            <label for="reviewer_signature">Signature:</label>
-            <input type="text" id="reviewer_signature" name="Signature">
+            <div class="form-grid">
+                <div>
+                    <label for="reviewer_name">Name:</label>
+                    <input type="text" id="reviewer_name" name="Reviewer Name">
+                </div>
+                <div>
+                    <label for="reviewer_position">Position:</label>
+                    <input type="text" id="reviewer_position" name="Reviewer Position">
+                </div>
+                <div>
+                    <label for="reviewer_signature">Signature:</label>
+                    <input type="text" id="reviewer_signature" name="Reviewer Signature">
+                </div>
+            </div>
         </fieldset>
 
         <button type="button" onclick="generatePDF()">Submit</button>
@@ -252,17 +232,71 @@
             const formData = new FormData(document.getElementById('candidateForm'));
             const data = Object.fromEntries(formData);
 
-            let yPosition = 10;
-            doc.setFontSize(10);
+            doc.setFontSize(12);
+            let yPosition = 20;
 
-            for (const [key, value] of Object.entries(data)) {
-                doc.text(`${key}: ${value}`, 10, yPosition);
+            const addSection = (title, items) => {
+                doc.text(title, 10, yPosition);
                 yPosition += 10;
-                if (yPosition > 280) { // Adjust for page overflow
-                    doc.addPage();
-                    yPosition = 10;
-                }
-            }
+                items.forEach(([key, label]) => {
+                    doc.text(`${label}: ${data[key] || ''}`, 10, yPosition);
+                    yPosition += 10;
+                });
+            };
+
+            addSection('Basic Information', [
+                ['SN#', 'SN#'],
+                ['Name', 'Name'],
+                ['Position', 'Position'],
+                ['Nationality', 'Nationality'],
+                ['Age & DOB', 'Age & DOB'],
+                ['Contact Details', 'Contact Details'],
+                ['Email Address', 'Email Address'],
+                ['Marital Status', 'Marital Status'],
+                ['No. of Dependents', 'No. of Dependents'],
+                ['Monthly Package Salary', 'Monthly Package Salary'],
+                ['Transportation', 'Transportation'],
+                ['Leave Entitlement', 'Leave Entitlement'],
+                ['Interview Date', 'Interview Date'],
+                ['Languages', 'Languages'],
+                ['Department', 'Department'],
+                ['Education', 'Education'],
+                ['Gender', 'Gender'],
+                ['Notice Period/Availability', 'Notice Period/Availability'],
+                ['Total Years of Experience', 'Total Years of Experience'],
+                ['Place of Work', 'Place of Work'],
+                ['Other Benefits (*If any)', 'Other Benefits'],
+            ]);
+
+            yPosition = yPosition > 240 ? 20 : yPosition + 10;
+
+            addSection('Additional Information', [
+                ['Functional Knowledge', 'Functional Knowledge'],
+                ['Professional developments', 'Professional Developments'],
+                ['Technical Knowledge', 'Technical Knowledge'],
+                ['Leadership skills', 'Leadership Skills'],
+                ['Accountability', 'Accountability'],
+                ['Communication/Language skills', 'Communication/Language Skills'],
+                ['Express Ideas and clear response', 'Express Ideas and Clear Response'],
+                ['Teamwork & Empowerment', 'Teamwork & Empowerment'],
+                ['Passion', 'Passion'],
+                ['Achievements', 'Achievements'],
+                ['Adaptability', 'Adaptability'],
+                ['Confidence & Assertiveness', 'Confidence & Assertiveness'],
+                ['Personal Development', 'Personal Development'],
+                ['Problem solving & Decision making', 'Problem Solving & Decision Making'],
+                ['Overall Rating', 'Overall Rating'],
+                ['interview Outcome', 'Interview Outcome'],
+                ['Overall Evaluation', 'Overall Evaluation']
+            ]);
+
+            yPosition = yPosition > 240 ? 20 : yPosition + 10;
+
+            addSection('Review Details', [
+                ['Reviewer Name', 'Name'],
+                ['Reviewer Position', 'Position'],
+                ['Reviewer Signature', 'Signature']
+            ]);
 
             doc.save('CandidateInformation.pdf');
         }
