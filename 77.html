@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Candidate Information Form</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,39 +22,26 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             max-width: 800px;
             width: 100%;
-        }
-        fieldset {
-            border: none;
-            margin-bottom: 15px;
-            padding: 0;
-        }
-        legend {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            overflow-y: auto;
+            max-height: 90vh;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
         }
         input[type="text"],
         input[type="email"],
-        input[type="tel"],
         input[type="date"],
         input[type="number"] {
             width: 100%;
             padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            font-size: 0.9em;
+            font-size: 16px;
         }
         button {
             background-color: #28a745;
@@ -63,8 +49,9 @@
             padding: 10px 15px;
             border: none;
             border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            font-size: 1em;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #218838;
@@ -73,165 +60,150 @@
 </head>
 <body>
     <form id="candidateForm">
-        <fieldset>
-            <legend>Basic Information</legend>
-            <div class="form-grid">
-                <div>
-                    <label for="sn">SN#:</label>
-                    <input type="text" id="sn" name="SN#">
+        <!-- All fields listed -->
+        <label for="sn">1. SN#:</label>
+        <input type="text" id="sn" name="SN#">
 
-                    <label for="position">Position:</label>
-                    <input type="text" id="position" name="Position">
+        <label for="name">2. Name:</label>
+        <input type="text" id="name" name="Name">
 
-                    <label for="age_dob">Age & DOB:</label>
-                    <input type="text" id="age_dob" name="Age & DOB">
+        <label for="position">3. Position:</label>
+        <input type="text" id="position" name="Position">
 
-                    <label for="email">Email Address:</label>
-                    <input type="email" id="email" name="Email Address">
+        <label for="nationality">4. Nationality:</label>
+        <input type="text" id="nationality" name="Nationality">
 
-                    <label for="dependents">No. of Dependents:</label>
-                    <input type="number" id="dependents" name="No. of Dependents">
+        <label for="age_dob">5. Age & DOB:</label>
+        <input type="text" id="age_dob" name="Age & DOB">
 
-                    <label for="transportation">Transportation:</label>
-                    <input type="text" id="transportation" name="Transportation">
+        <label for="contact">6. Contact Details:</label>
+        <input type="text" id="contact" name="Contact Details">
 
-                    <label for="interview_date">Interview Date:</label>
-                    <input type="date" id="interview_date" name="Interview Date">
+        <label for="email">7. Email Address:</label>
+        <input type="email" id="email" name="Email Address">
 
-                    <label for="department">Department:</label>
-                    <input type="text" id="department" name="Department">
+        <label for="marital_status">8. Marital Status:</label>
+        <input type="text" id="marital_status" name="Marital Status">
 
-                    <label for="gender">Gender:</label>
-                    <input type="text" id="gender" name="Gender">
+        <label for="dependents">9. No. of Dependents:</label>
+        <input type="number" id="dependents" name="No. of Dependents">
 
-                    <label for="experience">Total Years of Experience:</label>
-                    <input type="number" id="experience" name="Total Years of Experience">
+        <label for="salary">10. Monthly Package Salary:</label>
+        <input type="number" id="salary" name="Monthly Package Salary">
 
-                    <label for="accommodation">Accommodation:</label>
-                    <input type="text" id="accommodation" name="Accommodation">
-                </div>
-                <div>
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="Name">
+        <label for="transportation">11. Transportation:</label>
+        <input type="text" id="transportation" name="Transportation">
 
-                    <label for="nationality">Nationality:</label>
-                    <input type="text" id="nationality" name="Nationality">
+        <label for="leave_entitlement">12. Leave Entitlement:</label>
+        <input type="text" id="leave_entitlement" name="Leave Entitlement">
 
-                    <label for="contact">Contact Details:</label>
-                    <input type="text" id="contact" name="Contact Details">
+        <label for="interview_date">13. Interview Date:</label>
+        <input type="date" id="interview_date" name="Interview Date">
 
-                    <label for="marital_status">Marital Status:</label>
-                    <input type="text" id="marital_status" name="Marital Status">
-                
-                    <label for="salary">Monthly Package Salary:</label>
-                    <input type="number" id="salary" name="Monthly Package Salary">
+        <label for="languages">14. Languages:</label>
+        <input type="text" id="languages" name="Languages">
 
-                    <label for="leave_entitlement">Leave Entitlement:</label>
-                    <input type="text" id="leave_entitlement" name="Leave Entitlement">
-                
-                    <label for="languages">Languages:</label>
-                    <input type="text" id="languages" name="Languages">
+        <label for="department">15. Department:</label>
+        <input type="text" id="department" name="Department">
 
-                    <label for="education">Education:</label>
-                    <input type="text" id="education" name="Education">
+        <label for="education">16. Education:</label>
+        <input type="text" id="education" name="Education">
 
-                    <label for="notice_period">Notice Period/Availability:</label>
-                    <input type="text" id="notice_period" name="Notice Period/Availability">
+        <label for="qualification">17. Qualification:</label>
+        <input type="text" id="qualification" name="Qualification">
 
-                    <label for="work_place">Place of Work:</label>
-                    <input type="text" id="work_place" name="Place of Work">
+        <label for="gender">18. Gender:</label>
+        <input type="text" id="gender" name="Gender">
 
-                    <label for="other_benefits">Other Benefits:</label>
-                    <input type="text" id="other_benefits" name="Other Benefits (*If any)">
-                </div>
-            </div>
-        </fieldset>
+        <label for="notice_period">19. Notice Period/Availability:</label>
+        <input type="text" id="notice_period" name="Notice Period/Availability">
 
-        <fieldset>
-            <legend>Additional Information</legend>
-            <div>
-                <label for="functional_knowledge">Functional Knowledge:</label>
-                <input type="text" id="functional_knowledge" name="Functional Knowledge">
+        <label for="experience">20. Total Years of Experience:</label>
+        <input type="number" id="experience" name="Total Years of Experience">
 
-                <label for="professional_developments">Professional Developments:</label>
-                <input type="text" id="professional_developments" name="Professional developments">
+        <label for="work_place">21. Place of Work:</label>
+        <input type="text" id="work_place" name="Place of Work">
 
-                <label for="technical_knowledge">Technical Knowledge:</label>
-                <input type="text" id="technical_knowledge" name="Technical Knowledge">
+        <label for="reporting_to">22. Reporting to (Job Title):</label>
+        <input type="text" id="reporting_to" name="Reporting to (Job Title)">
 
-                <label for="leadership_skills">Leadership Skills:</label>
-                <input type="text" id="leadership_skills" name="Leadership skills">
+        <label for="accommodation">23. Accommodation:</label>
+        <input type="text" id="accommodation" name="Accommodation">
 
-                <label for="accountability">Accountability:</label>
-                <input type="text" id="accountability" name="Accountability">
+        <label for="other_benefits">24. Other Benefits (*If any):</label>
+        <input type="text" id="other_benefits" name="Other Benefits">
 
-                <label for="communication_skills">Communication/Language Skills:</label>
-                <input type="text" id="communication_skills" name="Communication/Language skills">
+        <label for="functional_knowledge">25. Functional Knowledge:</label>
+        <input type="text" id="functional_knowledge" name="Functional Knowledge">
 
-                <label for="ideas">Express Ideas and Clear Response:</label>
-                <input type="text" id="ideas" name="Express Ideas and clear response">
+        <label for="professional_development">26. Professional Developments:</label>
+        <input type="text" id="professional_development" name="Professional Developments">
 
-                <label for="teamwork">Teamwork & Empowerment:</label>
-                <input type="text" id="teamwork" name="Teamwork & Empowerment">
+        <label for="technical_knowledge">27. Technical Knowledge:</label>
+        <input type="text" id="technical_knowledge" name="Technical Knowledge">
 
-                <label for="passion">Passion:</label>
-                <input type="text" id="passion" name="Passion">
+        <label for="leadership_skills">28. Leadership Skills:</label>
+        <input type="text" id="leadership_skills" name="Leadership Skills">
 
-                <label for="achievements">Achievements:</label>
-                <input type="text" id="achievements" name="Achievements">
+        <label for="accountability">29. Accountability:</label>
+        <input type="text" id="accountability" name="Accountability">
 
-                <label for="adaptability">Adaptability:</label>
-                <input type="text" id="adaptability" name="Adaptability">
+        <label for="communication_skills">30. Communication/Language Skills:</label>
+        <input type="text" id="communication_skills" name="Communication/Language Skills">
 
-                <label for="confidence">Confidence & Assertiveness:</label>
-                <input type="text" id="confidence" name="Confidence & Assertiveness">
+        <label for="ideas">31. Express Ideas and Clear Response:</label>
+        <input type="text" id="ideas" name="Express Ideas and Clear Response">
 
-                <label for="personal_development">Personal Development:</label>
-                <input type="text" id="personal_development" name="Personal Development">
+        <label for="teamwork">32. Teamwork & Empowerment:</label>
+        <input type="text" id="teamwork" name="Teamwork & Empowerment">
 
-                <label for="problem_solving">Problem Solving & Decision Making:</label>
-                <input type="text" id="problem_solving" name="Problem solving & Decision making">
+        <label for="passion">33. Passion:</label>
+        <input type="text" id="passion" name="Passion">
 
-                <label for="overall_rating">Overall Rating:</label>
-                <input type="text" id="overall_rating" name="Overall Rating">
+        <label for="achievements">34. Achievements:</label>
+        <input type="text" id="achievements" name="Achievements">
 
-                <label for="interview_outcome">Interview Outcome:</label>
-                <input type="text" id="interview_outcome" name="interview Outcome">
+        <label for="adaptability">35. Adaptability:</label>
+        <input type="text" id="adaptability" name="Adaptability">
 
-                <label for="overall_evaluation">Overall Evaluation:</label>
-                <input type="text" id="overall_evaluation" name="Overall Evaluation">
-            </div>
-        </fieldset>
+        <label for="confidence">36. Confidence & Assertiveness:</label>
+        <input type="text" id="confidence" name="Confidence & Assertiveness">
 
-        <fieldset>
-            <legend>Review Details</legend>
-            <div class="form-grid">
-                <div>
-                    <label for="reviewer_name">Name:</label>
-                    <input type="text" id="reviewer_name" name="Reviewer Name">
-                </div>
-                <div>
-                    <label for="reviewer_position">Position:</label>
-                    <input type="text" id="reviewer_position" name="Reviewer Position">
-                </div>
-                <div>
-                    <label for="reviewer_signature">Signature:</label>
-                    <input type="text" id="reviewer_signature" name="Reviewer Signature">
-                </div>
-            </div>
-        </fieldset>
+        <label for="personal_development">37. Personal Development:</label>
+        <input type="text" id="personal_development" name="Personal Development">
 
-        <button type="button" onclick="generatePDF()">Submit</button>
+        <label for="problem_solving">38. Problem Solving & Decision Making:</label>
+        <input type="text" id="problem_solving" name="Problem Solving & Decision Making">
+
+        <label for="overall_rating">39. Overall Rating:</label>
+        <input type="text" id="overall_rating" name="Overall Rating">
+
+        <label for="interview_outcome">40. Interview Outcome:</label>
+        <input type="text" id="interview_outcome" name="Interview Outcome">
+
+        <label for="overall_evaluation">41. Overall Evaluation:</label>
+        <input type="text" id="overall_evaluation" name="Overall Evaluation">
+
+        <label for="reviewer_name">42. Reviewer Name:</label>
+        <input type="text" id="reviewer_name" name="Reviewer Name">
+
+        <label for="reviewer_position">43. Reviewer Position:</label>
+        <input type="text" id="reviewer_position" name="Reviewer Position">
+
+        <label for="signature">44. Reviewer Signature:</label>
+        <input type="text" id="signature" name="Reviewer Signature">
+
+        <button type="button" onclick="submitForm()">Submit</button>
     </form>
 
     <script>
         async function submitForm() {
-            const form = document.getElementById('formData');
+            const form = document.getElementById('candidateForm');
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbywHMrmzQP_x0kj5Eqh5atlVCK3TJ8SE7srIEvPViqArrVEoSad0Iech8E7p77Jr5TEpg/exec', {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbxnUu4s1LxXBGYFE7S0fqYxntDdMxYAHa0zSfWY1tIP0DBu37F-g2JQ1z4d222gzKvIZw/exec', {
                     method: 'POST',
                     body: JSON.stringify(data),
                     headers: { 'Content-Type': 'application/json' }
@@ -239,13 +211,13 @@
 
                 const result = await response.json();
                 if (result.status === 'success') {
-                    alert('Data sent successfully!');
+                    alert('Data submitted successfully!');
                 } else {
-                    alert('Failed to send data.');
+                    alert('Failed to submit data. Please try again.');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('Failed to send data.');
+                alert('Error: Unable to submit the form.');
+                console.error(error);
             }
         }
     </script>
