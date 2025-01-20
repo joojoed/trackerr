@@ -21,7 +21,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
+            max-width: 800px;
             width: 100%;
         }
         fieldset {
@@ -34,8 +34,16 @@
             margin-bottom: 10px;
             color: #333;
         }
-        label {
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-row label,
+        .form-row input {
             display: block;
+            width: 48%;
+        }
+        label {
             margin-bottom: 5px;
             color: #555;
         }
@@ -44,13 +52,13 @@
         input[type="tel"],
         input[type="date"],
         input[type="number"] {
-            width: calc(100% - 10px);
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
-            margin-bottom: 15px;
+            width: calc(100% - 10px);
             font-size: 0.9em;
+            margin-bottom: 15px;
         }
         button {
             background-color: #28a745;
@@ -70,81 +78,105 @@
     <form id="candidateForm">
         <fieldset>
             <legend>Basic Information</legend>
-            <label for="sn">SN#:</label>
-            <input type="text" id="sn" name="SN#">
+            <div class="form-row">
+                <label for="sn">SN#:</label>
+                <input type="text" id="sn" name="SN#">
 
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="Name">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="Name">
+            </div>
 
-            <label for="position">Position:</label>
-            <input type="text" id="position" name="Position">
+            <div class="form-row">
+                <label for="position">Position:</label>
+                <input type="text" id="position" name="Position">
 
-            <label for="nationality">Nationality:</label>
-            <input type="text" id="nationality" name="Nationality">
+                <label for="nationality">Nationality:</label>
+                <input type="text" id="nationality" name="Nationality">
+            </div>
 
-            <label for="age_dob">Age & DOB:</label>
-            <input type="text" id="age_dob" name="Age & DOB">
+            <div class="form-row">
+                <label for="age_dob">Age & DOB:</label>
+                <input type="text" id="age_dob" name="Age & DOB">
 
-            <label for="contact">Contact Details:</label>
-            <input type="text" id="contact" name="Contact Details">
+                <label for="contact">Contact Details:</label>
+                <input type="text" id="contact" name="Contact Details">
+            </div>
 
-            <label for="email">Email Address:</label>
-            <input type="email" id="email" name="Email Address">
+            <div class="form-row">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="Email Address">
 
-            <label for="marital_status">Marital Status:</label>
-            <input type="text" id="marital_status" name="Marital Status">
+                <label for="marital_status">Marital Status:</label>
+                <input type="text" id="marital_status" name="Marital Status">
+            </div>
 
-            <label for="dependents">No. of Dependents:</label>
-            <input type="number" id="dependents" name="No. of Dependents">
-            
-            <label for="salary">Monthly Package Salary:</label>
-            <input type="number" id="salary" name="Monthly Package Salary">
+            <div class="form-row">
+                <label for="dependents">No. of Dependents:</label>
+                <input type="number" id="dependents" name="No. of Dependents">
+                
+                <label for="salary">Monthly Package Salary:</label>
+                <input type="number" id="salary" name="Monthly Package Salary">
+            </div>
 
-            <label for="transportation">Transportation:</label>
-            <input type="text" id="transportation" name="Transportation">
+            <div class="form-row">
+                <label for="transportation">Transportation:</label>
+                <input type="text" id="transportation" name="Transportation">
 
-            <label for="leave_entitlement">Leave Entitlement:</label>
-            <input type="text" id="leave_entitlement" name="Leave Entitlement">
+                <label for="leave_entitlement">Leave Entitlement:</label>
+                <input type="text" id="leave_entitlement" name="Leave Entitlement">
+            </div>
 
-            <label for="interview_date">Interview Date:</label>
-            <input type="date" id="interview_date" name="Interview Date">
+            <div class="form-row">
+                <label for="interview_date">Interview Date:</label>
+                <input type="date" id="interview_date" name="Interview Date">
+
+                <label for="languages">Languages:</label>
+                <input type="text" id="languages" name="Languages">
+            </div>
+
+            <div class="form-row">
+                <label for="department">Department:</label>
+                <input type="text" id="department" name="Department">
+
+                <label for="education">Education:</label>
+                <input type="text" id="education" name="Education">
+            </div>
+
+            <div class="form-row">
+                <label for="qualification">Qualification:</label>
+                <input type="text" id="qualification" name="Qualification">
+
+                <label for="gender">Gender:</label>
+                <input type="text" id="gender" name="Gender">
+            </div>
+
+            <div class="form-row">
+                <label for="notice_period">Notice Period/Availability:</label>
+                <input type="text" id="notice_period" name="Notice Period/Availability">
+
+                <label for="experience">Total Years of Experience:</label>
+                <input type="number" id="experience" name="Total Years of Experience">
+            </div>
+
+            <div class="form-row">
+                <label for="work_place">Place of Work:</label>
+                <input type="text" id="work_place" name="Place of Work">
+
+                <label for="reporting_to">Reporting to (Job Title):</label>
+                <input type="text" id="reporting_to" name="Reporting to (Job Title)">
+            </div>
+
+            <div class="form-row">
+                <label for="accommodation">Accommodation:</label>
+                <input type="text" id="accommodation" name="Accommodation">
+
+                <label for="other_benefits">Other Benefits:</label>
+                <input type="text" id="other_benefits" name="Other Benefits (*If any)">
+            </div>
         </fieldset>
 
         <fieldset>
             <legend>Additional Information</legend>
-            <label for="languages">Languages:</label>
-            <input type="text" id="languages" name="Languages">
-
-            <label for="department">Department:</label>
-            <input type="text" id="department" name="Department">
-
-            <label for="education">Education:</label>
-            <input type="text" id="education" name="Education">
-
-            <label for="qualification">Qualification:</label>
-            <input type="text" id="qualification" name="Qualification">
-
-            <label for="gender">Gender:</label>
-            <input type="text" id="gender" name="Gender">
-
-            <label for="notice_period">Notice Period/Availability:</label>
-            <input type="text" id="notice_period" name="Notice Period/Availability">
-
-            <label for="experience">Total Years of Experience:</label>
-            <input type="number" id="experience" name="Total Years of Experience">
-
-            <label for="work_place">Place of Work:</label>
-            <input type="text" id="work_place" name="Place of Work">
-
-            <label for="reporting_to">Reporting to (Job Title):</label>
-            <input type="text" id="reporting_to" name="Reporting to (Job Title)">
-
-            <label for="accommodation">Accommodation:</label>
-            <input type="text" id="accommodation" name="Accommodation">
-
-            <label for="other_benefits">Other Benefits:</label>
-            <input type="text" id="other_benefits" name="Other Benefits (*If any)">
-
             <label for="functional_knowledge">Functional Knowledge:</label>
             <input type="text" id="functional_knowledge" name="Functional Knowledge">
 
