@@ -225,80 +225,28 @@
     </form>
 
     <script>
-        async function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+        async function submitForm() {
+            const form = document.getElementById('formData');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
 
-            const formData = new FormData(document.getElementById('candidateForm'));
-            const data = Object.fromEntries(formData);
-
-            doc.setFontSize(12);
-            let yPosition = 20;
-
-            const addSection = (title, items) => {
-                doc.text(title, 10, yPosition);
-                yPosition += 10;
-                items.forEach(([key, label]) => {
-                    doc.text(`${label}: ${data[key] || ''}`, 10, yPosition);
-                    yPosition += 10;
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbxlWYNhKhVHPz2rj_TwErAlRy5d-LJYRqIEdkQLKK7MhJA83ns_c-ZEIGYQxuX9bdyl3g/exec', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
                 });
-            };
 
-            addSection('Basic Information', [
-                ['SN#', 'SN#'],
-                ['Name', 'Name'],
-                ['Position', 'Position'],
-                ['Nationality', 'Nationality'],
-                ['Age & DOB', 'Age & DOB'],
-                ['Contact Details', 'Contact Details'],
-                ['Email Address', 'Email Address'],
-                ['Marital Status', 'Marital Status'],
-                ['No. of Dependents', 'No. of Dependents'],
-                ['Monthly Package Salary', 'Monthly Package Salary'],
-                ['Transportation', 'Transportation'],
-                ['Leave Entitlement', 'Leave Entitlement'],
-                ['Interview Date', 'Interview Date'],
-                ['Languages', 'Languages'],
-                ['Department', 'Department'],
-                ['Education', 'Education'],
-                ['Gender', 'Gender'],
-                ['Notice Period/Availability', 'Notice Period/Availability'],
-                ['Total Years of Experience', 'Total Years of Experience'],
-                ['Place of Work', 'Place of Work'],
-                ['Other Benefits (*If any)', 'Other Benefits'],
-            ]);
-
-            yPosition = yPosition > 240 ? 20 : yPosition + 10;
-
-            addSection('Additional Information', [
-                ['Functional Knowledge', 'Functional Knowledge'],
-                ['Professional developments', 'Professional Developments'],
-                ['Technical Knowledge', 'Technical Knowledge'],
-                ['Leadership skills', 'Leadership Skills'],
-                ['Accountability', 'Accountability'],
-                ['Communication/Language skills', 'Communication/Language Skills'],
-                ['Express Ideas and clear response', 'Express Ideas and Clear Response'],
-                ['Teamwork & Empowerment', 'Teamwork & Empowerment'],
-                ['Passion', 'Passion'],
-                ['Achievements', 'Achievements'],
-                ['Adaptability', 'Adaptability'],
-                ['Confidence & Assertiveness', 'Confidence & Assertiveness'],
-                ['Personal Development', 'Personal Development'],
-                ['Problem solving & Decision making', 'Problem Solving & Decision Making'],
-                ['Overall Rating', 'Overall Rating'],
-                ['interview Outcome', 'Interview Outcome'],
-                ['Overall Evaluation', 'Overall Evaluation']
-            ]);
-
-            yPosition = yPosition > 240 ? 20 : yPosition + 10;
-
-            addSection('Review Details', [
-                ['Reviewer Name', 'Name'],
-                ['Reviewer Position', 'Position'],
-                ['Reviewer Signature', 'Signature']
-            ]);
-
-            doc.save('CandidateInformation.pdf');
+                const result = await response.json();
+                if (result.status === 'success') {
+                    alert('Data sent successfully!');
+                } else {
+                    alert('Failed to send data.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to send data.');
+            }
         }
     </script>
 </body>
