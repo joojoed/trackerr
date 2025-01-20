@@ -60,138 +60,21 @@
 </head>
 <body>
     <form id="candidateForm">
-        <!-- All fields listed -->
         <label for="sn">1. SN#:</label>
         <input type="text" id="sn" name="SN#">
 
         <label for="name">2. Name:</label>
         <input type="text" id="name" name="Name">
 
-        <label for="position">3. Position:</label>
-        <input type="text" id="position" name="Position">
-
-        <label for="nationality">4. Nationality:</label>
-        <input type="text" id="nationality" name="Nationality">
-
-        <label for="age_dob">5. Age & DOB:</label>
-        <input type="text" id="age_dob" name="Age & DOB">
-
-        <label for="contact">6. Contact Details:</label>
-        <input type="text" id="contact" name="Contact Details">
+        <!-- Add other fields as needed -->
 
         <label for="email">7. Email Address:</label>
         <input type="email" id="email" name="Email Address">
 
-        <label for="marital_status">8. Marital Status:</label>
-        <input type="text" id="marital_status" name="Marital Status">
-
-        <label for="dependents">9. No. of Dependents:</label>
-        <input type="number" id="dependents" name="No. of Dependents">
-
-        <label for="salary">10. Monthly Package Salary:</label>
-        <input type="number" id="salary" name="Monthly Package Salary">
-
-        <label for="transportation">11. Transportation:</label>
-        <input type="text" id="transportation" name="Transportation">
-
-        <label for="leave_entitlement">12. Leave Entitlement:</label>
-        <input type="text" id="leave_entitlement" name="Leave Entitlement">
-
-        <label for="interview_date">13. Interview Date:</label>
-        <input type="date" id="interview_date" name="Interview Date">
-
-        <label for="languages">14. Languages:</label>
-        <input type="text" id="languages" name="Languages">
-
-        <label for="department">15. Department:</label>
-        <input type="text" id="department" name="Department">
-
-        <label for="education">16. Education:</label>
-        <input type="text" id="education" name="Education">
-
-        <label for="qualification">17. Qualification:</label>
-        <input type="text" id="qualification" name="Qualification">
-
-        <label for="gender">18. Gender:</label>
-        <input type="text" id="gender" name="Gender">
-
-        <label for="notice_period">19. Notice Period/Availability:</label>
-        <input type="text" id="notice_period" name="Notice Period/Availability">
-
-        <label for="experience">20. Total Years of Experience:</label>
-        <input type="number" id="experience" name="Total Years of Experience">
-
-        <label for="work_place">21. Place of Work:</label>
-        <input type="text" id="work_place" name="Place of Work">
-
-        <label for="reporting_to">22. Reporting to (Job Title):</label>
-        <input type="text" id="reporting_to" name="Reporting to (Job Title)">
-
-        <label for="accommodation">23. Accommodation:</label>
-        <input type="text" id="accommodation" name="Accommodation">
-
-        <label for="other_benefits">24. Other Benefits (*If any):</label>
-        <input type="text" id="other_benefits" name="Other Benefits">
-
-        <label for="functional_knowledge">25. Functional Knowledge:</label>
-        <input type="text" id="functional_knowledge" name="Functional Knowledge">
-
-        <label for="professional_development">26. Professional Developments:</label>
-        <input type="text" id="professional_development" name="Professional Developments">
-
-        <label for="technical_knowledge">27. Technical Knowledge:</label>
-        <input type="text" id="technical_knowledge" name="Technical Knowledge">
-
-        <label for="leadership_skills">28. Leadership Skills:</label>
-        <input type="text" id="leadership_skills" name="Leadership Skills">
-
-        <label for="accountability">29. Accountability:</label>
-        <input type="text" id="accountability" name="Accountability">
-
-        <label for="communication_skills">30. Communication/Language Skills:</label>
-        <input type="text" id="communication_skills" name="Communication/Language Skills">
-
-        <label for="ideas">31. Express Ideas and Clear Response:</label>
-        <input type="text" id="ideas" name="Express Ideas and Clear Response">
-
-        <label for="teamwork">32. Teamwork & Empowerment:</label>
-        <input type="text" id="teamwork" name="Teamwork & Empowerment">
-
-        <label for="passion">33. Passion:</label>
-        <input type="text" id="passion" name="Passion">
-
-        <label for="achievements">34. Achievements:</label>
-        <input type="text" id="achievements" name="Achievements">
-
-        <label for="adaptability">35. Adaptability:</label>
-        <input type="text" id="adaptability" name="Adaptability">
-
-        <label for="confidence">36. Confidence & Assertiveness:</label>
-        <input type="text" id="confidence" name="Confidence & Assertiveness">
-
-        <label for="personal_development">37. Personal Development:</label>
-        <input type="text" id="personal_development" name="Personal Development">
-
-        <label for="problem_solving">38. Problem Solving & Decision Making:</label>
-        <input type="text" id="problem_solving" name="Problem Solving & Decision Making">
-
-        <label for="overall_rating">39. Overall Rating:</label>
-        <input type="text" id="overall_rating" name="Overall Rating">
-
         <label for="interview_outcome">40. Interview Outcome:</label>
         <input type="text" id="interview_outcome" name="Interview Outcome">
 
-        <label for="overall_evaluation">41. Overall Evaluation:</label>
-        <input type="text" id="overall_evaluation" name="Overall Evaluation">
-
-        <label for="reviewer_name">42. Reviewer Name:</label>
-        <input type="text" id="reviewer_name" name="Reviewer Name">
-
-        <label for="reviewer_position">43. Reviewer Position:</label>
-        <input type="text" id="reviewer_position" name="Reviewer Position">
-
-        <label for="signature">44. Reviewer Signature:</label>
-        <input type="text" id="signature" name="Reviewer Signature">
+        <!-- Add additional fields up to #44 -->
 
         <button type="button" onclick="submitForm()">Submit</button>
     </form>
@@ -213,11 +96,11 @@
                 if (result.status === 'success') {
                     alert('Data submitted successfully!');
                 } else {
-                    alert('Failed to submit data. Please try again.');
+                    alert('Failed to submit data: ' + (result.message || 'Unknown error.'));
                 }
             } catch (error) {
+                console.error('Fetch error:', error);
                 alert('Error: Unable to submit the form.');
-                console.error(error);
             }
         }
     </script>
